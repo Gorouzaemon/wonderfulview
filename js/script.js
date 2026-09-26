@@ -1,21 +1,26 @@
 /* =========================================================
    スキー場絶景集  script.js（jQuery）
    1. 日本地図のスポット（トップページ）
-   2. 「日本地図へ」のスクロール・地図がふわっと出てくる動き（トップページ）
+   2. 「日本地図へ」のスクロール・地図や写真がふわっと出てくる動き
    3. 右側のタブ（トップページ）
    4. 写真の拡大表示＝ライトボックス（スキー場ページ）
    5. 「日本地図にもどる」ボタン（スキー場ページ）
 ========================================================= */
 
-$(function () {
-    $('html').addClass('is-js');  // JS が動いているときだけ使う CSS の目印
-    setupMapSpots();
-    setupScrollCue();
-    setupReveal();
-    setupSideTab();
-    setupGallery();
-    setupBackLink();
-});
+if (window.jQuery) {
+    $(function () {
+        setupMapSpots();
+        setupScrollCue();
+        setupReveal();
+        setupSideTab();
+        setupGallery();
+        setupBackLink();
+    });
+} else {
+    // jQuery が読み込めなかったとき（ネットにつながっていないときなど）は、
+    // CSS で隠している地図や写真をそのまま表示する
+    document.documentElement.className += ' no-jquery';
+}
 
 
 /* ---------------------------------------------------------
@@ -109,10 +114,8 @@ function setupScrollCue() {
 }
 
 function setupReveal() {
-    // スキー場ページの写真は1枚ずつ出す（写真を増やしても自動で付く）
-    $('#js-gallery li').addClass('reveal');
-
-    var $targets = $('.reveal');
+    // 最初は CSS で隠れているもの（地図と、スキー場ページの写真1枚1枚）
+    var $targets = $('.reveal, #js-gallery li');
     if (!$targets.length) return;
 
     function check() {
@@ -120,7 +123,7 @@ function setupReveal() {
         var scrollTop = $(window).scrollTop();
         var winHeight = $(window).height();
         var line = scrollTop + winHeight * 0.85;
-        // ページのいちばん下まで来たら、残りも全部出す（最後のボタンが出ないままにならないように）
+        // ページのいちばん下まで来たら、残りも全部出す（最後の写真が出ないままにならないように）
         if (scrollTop + winHeight >= $(document).height() - 5) {
             line = Infinity;
         }

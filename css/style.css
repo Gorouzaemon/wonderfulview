@@ -401,14 +401,24 @@ a {
     text-wrap: balance;  /* 折り返したとき行の長さをそろえる */
 }
 
-/* スクロールして地図が見えてきたら、下からふわっと出てくる（jQuery が is-visible を付ける） */
-.is-js .reveal {
+/* スクロールして見えてきたら、下からふわっと出てくる（地図・スキー場ページの写真）
+   最初から CSS で隠しておき、jQuery が is-visible を付けたら出てくる */
+.reveal,
+.gallery li {
     opacity: 0;
     transform: translateY(48px);
     transition: opacity 1s ease, transform 1s ease;
 }
 
-.is-js .reveal.is-visible {
+.reveal.is-visible,
+.gallery li.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+/* jQuery が読み込めなかったとき（ネットにつながっていないときなど）は、隠さずにそのまま表示 */
+.no-jquery .reveal,
+.no-jquery .gallery li {
     opacity: 1;
     transform: none;
 }
@@ -791,7 +801,8 @@ body.is-locked {
         animation: none;
     }
 
-    .is-js .reveal {
+    .reveal,
+    .gallery li {
         transition: none;
     }
 }
