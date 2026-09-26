@@ -438,6 +438,7 @@ a {
     font-weight: 700;
     letter-spacing: .12em;
     text-decoration: none;
+    white-space: nowrap;  /* 画面の高さが低くても文字を2列に折り返さない */
     writing-mode: vertical-rl;
     box-shadow: -4px 4px 16px rgba(23, 50, 77, .3);
     transform: translateY(-50%);
@@ -478,30 +479,32 @@ a {
 
 /* 2-4. フッター（製作者のプロフィール）：左に写真、右に自己紹介 */
 .profile-footer {
-    padding: 56px 20px 20px;
+    padding: 56px 72px 20px;  /* 左右72px：右端に固定しているタブと重ならないように */
 }
 
 .profile {
     display: flex;
     align-items: center;
-    gap: 28px;
-    max-width: 900px;
+    gap: 40px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 24px;
-    border-radius: 20px;
+    padding: 32px 40px;
+    border-radius: 24px;
     background: rgba(255, 255, 255, .92);
     box-shadow: var(--shadow);
 }
 
-/* 写真は横幅の3割くらい */
+/* 写真は横幅の3割5分くらい。高さは自動（height: auto）なので縦横の比率は変わらない */
 .profile-photo {
-    flex: 0 0 30%;
-    width: 30%;
-    border-radius: 14px;
+    flex: 0 0 35%;
+    width: 35%;
+    height: auto;
+    border-radius: 16px;
 }
 
 .profile-text {
     flex: 1;
+    font-size: 1.25rem;
     line-height: 2;
 }
 
@@ -750,6 +753,15 @@ body.is-locked {
     .gallery {
         grid-template-columns: repeat(3, 1fr);
     }
+
+    .profile {
+        gap: 28px;
+        padding: 28px;
+    }
+
+    .profile-text {
+        font-size: 1.1rem;
+    }
 }
 
 /* スマホでは右端のタブが地図や文字に重なるので、地図の下のボタンにする */
@@ -762,6 +774,7 @@ body.is-locked {
         border-radius: 999px;
         font-size: .95rem;
         letter-spacing: .06em;
+        white-space: normal;  /* ボタンのときは、とても細い画面なら折り返してよい */
         writing-mode: horizontal-tb;
         transform: none;
     }
@@ -781,6 +794,12 @@ body.is-locked {
         bottom: auto;
         padding: 12px 18px;
         font-size: .85rem;
+    }
+
+    /* タブがボタンになったので、プロフィールの左右の余白は小さくてよい */
+    .profile-footer {
+        padding-right: 20px;
+        padding-left: 20px;
     }
 }
 
@@ -811,14 +830,21 @@ body.is-locked {
         padding: 32px 12px 16px;
     }
 
+    /* スマホは写真を上、文章を下に縦に並べて、どちらも大きく見せる */
     .profile {
-        gap: 14px;
-        padding: 16px;
+        flex-direction: column;
+        gap: 16px;
+        padding: 20px;
+    }
+
+    .profile-photo {
+        flex: none;
+        width: 100%;
     }
 
     .profile-text {
-        font-size: .9rem;
-        line-height: 1.8;
+        font-size: 1.05rem;
+        line-height: 1.9;
     }
 
     .resort-header {
