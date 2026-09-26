@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@600;700;900&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
     <!-- ?v= の数字は、CSS や JS を直したら1つ増やす（ブラウザが古いファイルを使い続けないように） -->
-    <link rel="stylesheet" href="css/style.css?v=2">
+    <link rel="stylesheet" href="css/style.css?v=3">
 </head>
 <body class="page-top">
 
@@ -57,6 +57,9 @@
             <a class="spot" href="goryu.html" target="_blank" rel="opener" data-lat="36.668" data-lon="137.830">
                 <span class="spot-name">白馬47＆五竜</span>
             </a>
+            <a class="spot" href="zao.html" target="_blank" rel="opener" data-lat="38.160" data-lon="140.415">
+                <span class="spot-name">蔵王温泉</span>
+            </a>
         </div>
 
         <p class="map-hint">青い点にカーソルを合わせるとスキー場名が出るよ。クリックすると、そのスキー場の絶景集が別のタブで開くよ！</p>
@@ -67,14 +70,19 @@
         スキー場以外の絶景はこちら<span class="side-tab-arrow">→</span>
     </a>
 
-    <footer class="site-footer">
-        <small>&copy; 2026 スキー場絶景集</small>
+    <!-- フッター：製作者のプロフィール（左に写真、右に自己紹介） -->
+    <footer class="profile-footer">
+        <div class="profile">
+            <img class="profile-photo" src="images/profile.jpg" alt="五郎左衛門の写真">
+            <p class="profile-text">初めまして。このサイトを製作した五郎左衛門と言います。スキーは趣味程度ですが10年以上、色んなスキー場に行ってまいりました。これからも日本全国だけでなく世界中のスキー場に行き、その都度このサイトを更新していきます！！</p>
+        </div>
+        <small class="copyright">&copy; 2026 スキー場絶景集</small>
     </footer>
 
     <!-- お知らせ（「準備中です」などを一瞬だけ表示する） -->
     <div class="toast" id="js-toast" role="status" aria-live="polite"></div>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="js/script.js?v=2"></script>
+    <script src="js/script.js?v=3"></script>
 </body>
 </html>

@@ -6,6 +6,7 @@
       2-1. 1画面目（タイトル）
       2-2. 日本地図（青い海・波の絵・スポット）
       2-3. 右側タブ・お知らせ
+      2-4. フッター（製作者のプロフィール）
    3. スキー場ページ（見出し・説明文・写真一覧）
    4. ライトボックス（写真の拡大表示）
    5. スマホ・タブレット対応
@@ -475,6 +476,44 @@ a {
 }
 
 
+/* 2-4. フッター（製作者のプロフィール）：左に写真、右に自己紹介 */
+.profile-footer {
+    padding: 56px 20px 20px;
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, .92);
+    box-shadow: var(--shadow);
+}
+
+/* 写真は横幅の3割くらい */
+.profile-photo {
+    flex: 0 0 30%;
+    width: 30%;
+    border-radius: 14px;
+}
+
+.profile-text {
+    flex: 1;
+    line-height: 2;
+}
+
+.copyright {
+    display: block;
+    margin-top: 28px;
+    font-size: .8rem;
+    text-align: center;
+    opacity: .7;
+}
+
+
 /* ---------- 3. スキー場ページ ---------- */
 .resort-header {
     position: relative;
@@ -492,6 +531,11 @@ a {
     height: 100%;
     object-fit: cover;
     opacity: .5;
+}
+
+/* 写真の下のほう（地面側）を見せたいときは class に bg-low を足す */
+.resort-header-bg.bg-low {
+    object-position: center 85%;
 }
 
 /* 写真の下側をページの背景色になじませる */
@@ -761,6 +805,20 @@ body.is-locked {
 
     .map-section {
         padding: 36px 8px 28px;
+    }
+
+    .profile-footer {
+        padding: 32px 12px 16px;
+    }
+
+    .profile {
+        gap: 14px;
+        padding: 16px;
+    }
+
+    .profile-text {
+        font-size: .9rem;
+        line-height: 1.8;
     }
 
     .resort-header {
