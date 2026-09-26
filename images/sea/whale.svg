@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 96">
+  <!-- 潮吹き -->
+  <g fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round">
+    <path d="M40 36 L 40 16"/>
+    <path d="M40 18 C 34 8, 25 7, 19 13"/>
+    <path d="M40 18 C 46 8, 55 7, 61 13"/>
+  </g>
+  <circle cx="17" cy="18" r="3" fill="#fff"/>
+  <circle cx="63" cy="18" r="3" fill="#fff"/>
+  <circle cx="40" cy="8" r="3" fill="#fff"/>
+  <!-- からだ -->
+  <path d="M8 64 C 6 44, 26 34, 52 36 C 76 38, 92 46, 98 58 L 110 46 C 114 41, 122 43, 120 51 L 114 62 L 122 72 C 126 79, 118 83, 112 77 L 100 67 C 94 79, 76 84, 54 84 C 28 84, 10 78, 8 64 Z" fill="#2f5fa8"/>
+  <!-- おなか -->
+  <path d="M12 68 C 24 80, 60 82, 86 72 C 70 76, 40 76, 12 68 Z" fill="#cfe9ff"/>
+  <!-- 目とほっぺ -->
+  <circle cx="30" cy="57" r="3.4" fill="#0f2640"/>
+  <circle cx="31" cy="56" r="1" fill="#fff"/>
+  <ellipse cx="23" cy="65" rx="4.5" ry="2.6" fill="#ff9fb4" opacity=".8"/>
+  <!-- 水面 -->
+  <path d="M2 88 q 8 -6 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0 t 16 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80">
+  <!-- 巻いている大きな波 -->
+  <path d="M2 78 C 4 56, 20 30, 50 20 C 74 12, 100 18, 110 34 C 118 48, 108 62, 94 60 C 82 58, 80 44, 90 42 C 96 41, 99 47, 95 50 C 90 44, 76 44, 72 56 C 68 68, 84 76, 118 76 L 118 80 L 2 80 Z" fill="#1d63b8"/>
+  <!-- 波の明るい面 -->
+  <path d="M14 78 C 18 58, 32 40, 54 32 C 70 27, 86 30, 94 38 C 80 34, 66 40, 60 52 C 56 62, 60 72, 70 78 Z" fill="#3f8fe0"/>
+  <!-- 白いしぶき（波がしら） -->
+  <path d="M8 66 C 16 42, 34 26, 58 21 C 78 17, 98 22, 107 36" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="M100 52 C 104 48, 104 42, 99 39" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+  <circle cx="112" cy="50" r="3.2" fill="#fff"/>
+  <circle cx="116" cy="41" r="2.2" fill="#fff"/>
+  <circle cx="106" cy="61" r="2.4" fill="#fff"/>
+  <!-- 足もとの小さな波 -->
+  <path d="M4 76 q 7 -6 14 0 t 14 0 t 14 0 t 14 0 t 14 0 t 14 0 t 14 0 t 14 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".9"/>
+</svg>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斑尾高原絶景集！｜スキー場絶景集</title>
+    <meta name="description" content="新潟県と長野県の県境にある斑尾高原スキー場で撮った絶景写真集。">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏔</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@600;700;900&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page-resort">
+
+    <header class="resort-header">
+        <!-- 見出しの後ろに薄く敷く写真（斑尾山と青空） -->
+        <img class="resort-header-bg" src="images/madarao/IMG_1126.jpg" alt="">
+        <a class="back-link" href="index.html">← 日本地図にもどる</a>
+        <h1 class="resort-title"><span>斑尾高原</span><span>絶景集！</span></h1>
+    </header>
+
+    <main class="resort-main">
+        <!-- 説明文 -->
+        <section class="resort-intro">
+            <p>斑尾高原は新潟県と長野県の県境にあるスキー場。その斑尾高原と言ったら何といっても樹々の間を滑るツリーランコース！！！勿論圧雪されていない環境で、樹々の間をさっそうと駆け抜けることで本当の雪山に来たんだと強く感じることができます！！</p>
+        </section>
+
+        <!-- 写真一覧：小さい写真（thumb）を並べて、クリックすると大きい写真を表示する
+             写真を増やすときは li を1行コピーして、2か所のファイル名を書きかえる -->
+        <section class="gallery-section">
+            <h2 class="gallery-heading">絶景ギャラリー<span class="photo-count" id="js-photo-count"></span></h2>
+            <ul class="gallery" id="js-gallery">
+                <li><a class="gallery-link" href="images/madarao/IMG_1111.jpg"><img src="images/madarao/thumb/IMG_1111.jpg" alt="雪の林の中を抜けるコース" loading="lazy"></a></li>
+                <li><a class="gallery-link" href="images/madarao/IMG_1115.jpg"><img src="images/madarao/thumb/IMG_1115.jpg" alt="霧に包まれたゲレンデ" loading="lazy"></a></li>
+                <li><a class="gallery-link" href="images/madarao/IMG_1122.jpg"><img src="images/madarao/thumb/IMG_1122.jpg" alt="夜の斑尾高原のゲート" loading="lazy"></a></li>
+                <li><a class="gallery-link" href="images/madarao/IMG_1126.jpg"><img src="images/madarao/thumb/IMG_1126.jpg" alt="青空と斑尾山のゲレンデ" loading="lazy"></a></li>
+                <li><a class="gallery-link" href="images/madarao/IMG_1130.jpg"><img src="images/madarao/thumb/IMG_1130.jpg" alt="晴れた日のゲレンデの眺め" loading="lazy"></a></li>
+                <li><a class="gallery-link" href="images/madarao/IMG_1132.jpg"><img src="images/madarao/thumb/IMG_1132.jpg" alt="樹氷の間をくだるコース" loading="lazy"></a></li>
+                <li><a class="gallery-link" href="images/madarao/IMG_1136.jpg"><img src="images/madarao/thumb/IMG_1136.jpg" alt="樹氷と青空" loading="lazy"></a></li>
+                <li><a class="gallery-link" href="images/madarao/IMG_1139.jpg"><img src="images/madarao/thumb/IMG_1139.jpg" alt="山の上から見た山並みと湖" loading="lazy"></a></li>
+                <li><a class="gallery-link" href="images/madarao/IMG_1146.jpg"><img src="images/madarao/thumb/IMG_1146.jpg" alt="カラマツ林のツリーラン" loading="lazy"></a></li>
+            </ul>
+        </section>
+
+        <p class="back-bottom"><a class="back-link" href="index.html">← 日本地図にもどる</a></p>
+    </main>
+
+    <footer class="site-footer">
+        <small>&copy; 2026 スキー場絶景集</small>
+    </footer>
+
+    <!-- 写真の拡大表示（ライトボックス）。ふだんは隠れていて、写真をクリックすると出てくる -->
+    <div class="lightbox" id="js-lightbox" role="dialog" aria-modal="true" aria-label="写真の拡大表示">
+        <button class="lightbox-btn lightbox-close" type="button" aria-label="閉じる">&times;</button>
+        <button class="lightbox-btn lightbox-prev" type="button" aria-label="前の写真">&#8249;</button>
+        <figure class="lightbox-figure">
+            <img class="lightbox-image" alt="">
+            <figcaption class="lightbox-count"></figcaption>
+        </figure>
+        <button class="lightbox-btn lightbox-next" type="button" aria-label="次の写真">&#8250;</button>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

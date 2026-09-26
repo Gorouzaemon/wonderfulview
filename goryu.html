@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>白馬47＆五竜絶景集！｜スキー場絶景集</title>
+    <meta name="description" content="長野県白馬村にある白馬47と白馬五竜スキー場で撮った絶景写真集。">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏔</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@600;700;900&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page-resort">
+
+    <header class="resort-header">
+        <!-- 見出しの後ろに薄く敷く写真（雪の尾根と青空） -->
+        <img class="resort-header-bg" src="images/goryu/IMG_3876.jpg" alt="">
+        <a class="back-link" href="index.html">← 日本地図にもどる</a>
+        <h1 class="resort-title"><span>白馬47＆五竜</span><span>絶景集！</span></h1>
+    </header>
+
+    <main class="resort-main">
+        <!-- 説明文（※仮の文章。自分の文章に書きかえてOK） -->
+        <section class="resort-intro">
+            <p>白馬47＆五竜は長野県白馬村にあるスキー場。となり合う白馬47と白馬五竜はゲレンデがつながっていて、共通のリフト券で行き来できます！晴れた日には北アルプスの雪山を間近に、ふもとの白馬の町並みまで一望できます！</p>
+        </section>
+
+        <!-- 写真一覧：小さい写真（thumb）を並べて、クリックすると大きい写真を表示する
+             写真を増やすときは li を1行コピーして、2か所のファイル名を書きかえる -->
+        <section class="gallery-section">
+            <h2 class="gallery-heading">絶景ギャラリー<span class="photo-count" id="js-photo-count"></span></h2>
+            <ul class="gallery" id="js-gallery">
+                <li><a class="gallery-link" href="images/goryu/IMG_3863.jpg"><img src="images/goryu/thumb/IMG_3863.jpg" alt="逆光の木立と雪面にのびる影" loading="lazy"></a></li>
+                <li><a class="gallery-link" href="images/goryu/IMG_3864.jpg"><img src="images/goryu/thumb/IMG_3864.jpg" alt="青空と遠くまで続く山並み" loading="lazy"></a></li>
+                <li><a class="gallery-link" href="images/goryu/IMG_3865.jpg"><img src="images/goryu/thumb/IMG_3865.jpg" alt="太陽とリフトのかかるゲレンデ" loading="lazy"></a></li>
+                <li><a class="gallery-link" href="images/goryu/IMG_3867.jpg"><img src="images/goryu/thumb/IMG_3867.jpg" alt="ゲレンデの上から見わたす景色" loading="lazy"></a></li>
+                <li><a class="gallery-link" href="images/goryu/IMG_3869.jpg"><img src="images/goryu/thumb/IMG_3869.jpg" alt="白樺の木と青空のゲレンデ" loading="lazy"></a></li>
+                <li><a class="gallery-link" href="images/goryu/IMG_3870.jpg"><img src="images/goryu/thumb/IMG_3870.jpg" alt="太陽とリフト" loading="lazy"></a></li>
+                <li><a class="gallery-link" href="images/goryu/IMG_3871.jpg"><img src="images/goryu/thumb/IMG_3871.jpg" alt="リフトの向こうに光る太陽" loading="lazy"></a></li>
+                <li><a class="gallery-link" href="images/goryu/IMG_3872.jpg"><img src="images/goryu/thumb/IMG_3872.jpg" alt="ふもとの町を見下ろす景色" loading="lazy"></a></li>
+                <li><a class="gallery-link" href="images/goryu/IMG_3873.jpg"><img src="images/goryu/thumb/IMG_3873.jpg" alt="雪をかぶった山の尾根とゲレンデ" loading="lazy"></a></li>
+                <li><a class="gallery-link" href="images/goryu/IMG_3874.jpg"><img src="images/goryu/thumb/IMG_3874.jpg" alt="青空と白い雲、雪面にうつる影" loading="lazy"></a></li>
+                <li><a class="gallery-link" href="images/goryu/IMG_3875.jpg"><img src="images/goryu/thumb/IMG_3875.jpg" alt="太陽の光とゲレンデ" loading="lazy"></a></li>
+                <li><a class="gallery-link" href="images/goryu/IMG_3876.jpg"><img src="images/goryu/thumb/IMG_3876.jpg" alt="雪山の尾根と青空に流れる雲" loading="lazy"></a></li>
+                <li><a class="gallery-link" href="images/goryu/IMG_3878.jpg"><img src="images/goryu/thumb/IMG_3878.jpg" alt="広いゲレンデを滑る人たち" loading="lazy"></a></li>
+            </ul>
+        </section>
+
+        <p class="back-bottom"><a class="back-link" href="index.html">← 日本地図にもどる</a></p>
+    </main>
+
+    <footer class="site-footer">
+        <small>&copy; 2026 スキー場絶景集</small>
+    </footer>
+
+    <!-- 写真の拡大表示（ライトボックス）。ふだんは隠れていて、写真をクリックすると出てくる -->
+    <div class="lightbox" id="js-lightbox" role="dialog" aria-modal="true" aria-label="写真の拡大表示">
+        <button class="lightbox-btn lightbox-close" type="button" aria-label="閉じる">&times;</button>
+        <button class="lightbox-btn lightbox-prev" type="button" aria-label="前の写真">&#8249;</button>
+        <figure class="lightbox-figure">
+            <img class="lightbox-image" alt="">
+            <figcaption class="lightbox-count"></figcaption>
+        </figure>
+        <button class="lightbox-btn lightbox-next" type="button" aria-label="次の写真">&#8250;</button>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

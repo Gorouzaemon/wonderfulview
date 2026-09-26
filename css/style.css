@@ -1,0 +1,797 @@
+@charset "UTF-8";
+/* =========================================================
+   スキー場絶景集  style.css
+   1. 共通（色・文字・リセット）
+   2. トップページ
+      2-1. 1画面目（タイトル）
+      2-2. 日本地図（青い海・波の絵・スポット）
+      2-3. 右側タブ・お知らせ
+   3. スキー場ページ（見出し・説明文・写真一覧）
+   4. ライトボックス（写真の拡大表示）
+   5. スマホ・タブレット対応
+========================================================= */
+
+
+/* ---------- 1. 共通 ---------- */
+:root {
+    --navy: #17324d;   /* 文字・タイトル */
+    --blue: #1a5fd6;   /* スポット（ふだん） */
+    --red: #e53935;    /* スポット（カーソルを合わせたとき） */
+    --snow: #f4f7fa;   /* ページの背景 */
+    --shadow: 0 8px 24px rgba(23, 50, 77, .15);
+    --mincho: "Zen Old Mincho", "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", serif;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+    color: var(--navy);
+    background: var(--snow);
+    line-height: 1.8;
+}
+
+h1,
+h2,
+p,
+ul,
+figure {
+    margin: 0;
+}
+
+ul {
+    padding: 0;
+    list-style: none;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+a {
+    color: inherit;
+}
+
+.site-footer {
+    padding: 20px;
+    text-align: center;
+    font-size: .8rem;
+    opacity: .7;
+}
+
+/* タイトルが折り返すときは「スキー場／絶景集！」のように言葉の切れ目で折り返す */
+.site-title span,
+.resort-title span {
+    display: inline-block;
+}
+
+/* タイトルの下の区切り線 */
+.hero-inner::after,
+.resort-title::after {
+    content: "";
+    display: block;
+    width: min(720px, 90%);
+    height: 2px;
+    margin: 24px auto 0;
+    background: linear-gradient(90deg, transparent, var(--navy), transparent);
+    opacity: .35;
+}
+
+
+/* ---------- 2. トップページ ---------- */
+.page-top {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: #fff;
+}
+
+/* 八方尾根の写真を画面いっぱいに「薄く」敷く（opacity で濃さを調整） */
+.page-top::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: url("../images/happo-one.jpg") center / cover no-repeat;
+    opacity: .4;
+}
+
+
+/* 2-1. 1画面目：タイトルを真ん中に大きく（パソコンもスマホも画面いっぱい） */
+.hero {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    min-height: 100svh;  /* スマホのアドレスバーを除いた高さ */
+    padding: 100px 20px;
+    text-align: center;
+}
+
+.site-title {
+    padding-left: .08em;  /* 字間のぶん右にずれるのを戻す */
+    font-family: var(--mincho);
+    font-weight: 900;
+    font-size: clamp(2.6rem, 9.5vw, 8rem);
+    line-height: 1.25;
+    letter-spacing: .08em;
+    text-shadow: 0 2px 0 #fff, 0 0 30px rgba(255, 255, 255, .95);
+}
+
+/* （スキー場以外もあるよ）は小さめに */
+.site-subtitle {
+    margin-top: .8em;
+    padding-left: .15em;
+    font-family: var(--mincho);
+    font-weight: 600;
+    font-size: clamp(1rem, 2.2vw, 1.6rem);
+    letter-spacing: .15em;
+    text-shadow: 0 0 12px #fff, 0 0 4px #fff;
+}
+
+/* 「日本地図へ」のスクロール案内（線が上から下へ流れる） */
+.scroll-cue {
+    position: absolute;
+    bottom: 72px;  /* 下の海の波とかさならない高さ */
+    left: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding-left: .2em;
+    color: var(--navy);
+    font-family: var(--mincho);
+    font-weight: 600;
+    font-size: .95rem;
+    letter-spacing: .2em;
+    text-decoration: none;
+    text-shadow: 0 0 10px #fff;
+    transform: translateX(-50%);
+}
+
+.scroll-cue-line {
+    position: relative;
+    overflow: hidden;
+    width: 2px;
+    height: 60px;
+    background: rgba(23, 50, 77, .2);
+}
+
+.scroll-cue-line::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--navy);
+    animation: scroll-line 2s ease-in-out infinite;
+}
+
+@keyframes scroll-line {
+    0% {
+        transform: translateY(-100%);
+    }
+    60%,
+    100% {
+        transform: translateY(100%);
+    }
+}
+
+
+/* 2-2. 日本地図：スクロールした先の画面いっぱいが青い海 */
+.map-section {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 24px 16px;
+    overflow-x: clip;  /* 画面の外にはみ出した波の絵はかくす */
+    background:
+        radial-gradient(ellipse 60% 45% at 25% 40%, rgba(255, 255, 255, .18), transparent),
+        linear-gradient(180deg, #6cc6f2 0%, #3a9be3 55%, #2a7fcf 100%);
+}
+
+/* 海の上の端を波の形にする（タイトルの画面から海につながる） */
+.map-section::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 100%;
+    left: 0;
+    height: 40px;
+    background: url("../images/sea/sea-edge.svg") left bottom / 240px 40px repeat-x;
+}
+
+/* 横長の画面（パソコンなど）では、海をちょうど1画面ぶんの高さにする */
+@media (min-aspect-ratio: 4/3) {
+    .map-section {
+        min-height: 100vh;
+        min-height: 100svh;
+    }
+}
+
+/* 地図の大きさ：画面に収まるいちばん大きいサイズ（縦は下の説明文のぶんだけ空ける） */
+.map {
+    position: relative;
+    width: min(100%, calc((100vh - 110px) * 1.273));
+    width: min(100%, calc((100svh - 110px) * 1.273));
+    container-type: inline-size;  /* 海の名前の文字を地図の大きさに合わせるため */
+}
+
+/* 日本列島（白いふちどり＋影で浮いて見えるように） */
+.map-image {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff) drop-shadow(0 6px 6px rgba(0, 45, 90, .3));
+}
+
+/* 海の絵（波・クジラ・ヨット）。left / top は「絵の真ん中」の位置、width は地図の横幅に対する大きさ */
+.sea-deco {
+    position: absolute;
+    z-index: 0;
+    height: auto;
+    pointer-events: none;
+    translate: -50% -50%;
+    animation: bob 4s ease-in-out infinite;  /* ぷかぷか上下に揺れる */
+}
+
+@keyframes bob {
+    50% {
+        transform: translateY(-8%);
+    }
+}
+
+.deco-boat    { top: 20.6%; left: 18.2%; width: 7.5%; animation-duration: 5s; }
+.deco-wave-1  { top: 13.7%; left: 41.2%; width: 9%;   animation-delay: -1s; }
+.deco-wave-2  { top: 91.1%; left: 71.5%; width: 9%;   animation-delay: -2.5s; }
+.deco-whale   { top: 52.4%; left: 87.7%; width: 11%;  animation-duration: 6s; }
+.deco-lines-1 { top: 43.8%; left: 7.4%;  width: 6.5%; }
+.deco-lines-2 { top: 34.4%; left: 46.6%; width: 5.5%; animation-delay: -1.5s; }
+.deco-lines-3 { top: 75.6%; left: 94.5%; width: 5.5%; animation-delay: -3s; }
+.deco-lines-4 { top: 97.1%; left: 55.3%; width: 6%;   animation-delay: -.5s; }
+.deco-lines-5 { top: 2.1%;  left: 83.9%; width: 5%;   animation-delay: -2s; }
+.deco-lines-6 { top: 89.3%; left: -3%;   width: 5%;   animation-delay: -3.5s; }
+
+/* 地図の外側（パソコンで横に余った海）の絵。画面が細いときは画面の外になってかくれる */
+.deco-side-1  { top: 20%;   left: -9%;   width: 6%;   animation-delay: -.8s; }
+.deco-side-2  { top: 64%;   left: -10%;  width: 8%;   animation-delay: -2.2s; }
+.deco-side-3  { top: 36%;   left: 109%;  width: 6%;   animation-delay: -1.2s; }
+.deco-side-4  { top: 90%;   left: 108%;  width: 5.5%; animation-delay: -3.2s; }
+
+/* 海の名前 */
+.sea-label {
+    position: absolute;
+    z-index: 0;
+    padding-left: .4em;
+    color: rgba(255, 255, 255, .92);
+    font-family: var(--mincho);
+    font-weight: 700;
+    font-size: 18px;
+    font-size: 2.6cqw;  /* 地図の横幅の2.6% */
+    letter-spacing: .4em;
+    white-space: nowrap;
+    text-shadow: 0 1px 3px rgba(0, 50, 100, .35);
+    pointer-events: none;
+    translate: -50% -50%;
+}
+
+.label-japan-sea { top: 38.7%; left: 29%; }
+.label-pacific   { top: 73%;   left: 81%; }
+
+/* スポット（クリックできる点）。left / top は script.js が緯度・経度から計算して入れる */
+.spot {
+    position: absolute;
+    z-index: 2;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;  /* 点の中心を場所にぴったり合わせる */
+    border-radius: 50%;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* 青い点（直径10px。白馬のように近くにたくさん並んでも見やすい小さめサイズ） */
+.spot::after {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: var(--blue);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
+    transition: background-color .15s, transform .15s;
+}
+
+/* 「ここ押せるよ」と分かるように広がる波紋 */
+.spot::before {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 1.5px solid var(--blue);
+    border-radius: 50%;
+    animation: spot-pulse 2s ease-out infinite;
+}
+
+@keyframes spot-pulse {
+    from {
+        transform: scale(1);
+        opacity: .9;
+    }
+    to {
+        transform: scale(2.6);
+        opacity: 0;
+    }
+}
+
+/* カーソルを乗せたとき（jQuery が is-active を付ける）→ 赤くなる */
+.spot.is-active,
+.spot:focus-visible {
+    z-index: 3;
+    outline: none;
+}
+
+.spot.is-active::after,
+.spot:focus-visible::after {
+    background: var(--red);
+    transform: scale(1.4);
+}
+
+.spot.is-active::before,
+.spot:focus-visible::before {
+    border-color: var(--red);
+}
+
+/* スキー場名のふきだし（ふだんは隠れている） */
+.spot-name {
+    position: absolute;
+    z-index: 3;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    padding: 4px 12px;
+    border-radius: 6px;
+    background: #fff;
+    color: var(--red);
+    font-size: .9rem;
+    font-weight: 700;
+    line-height: 1.4;
+    white-space: nowrap;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translate(-50%, 6px);
+    transition: opacity .15s, transform .15s, visibility .15s;
+}
+
+/* ふきだしの下向き三角 */
+.spot-name::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -6px;
+    border: 6px solid transparent;
+    border-top-color: #fff;
+}
+
+.spot.is-active .spot-name,
+.spot:focus-visible .spot-name {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+}
+
+.map-hint {
+    margin-top: 14px;
+    color: #fff;
+    font-size: .95rem;
+    font-weight: 700;
+    text-align: center;
+    text-shadow: 0 1px 4px rgba(0, 40, 90, .45);
+    text-wrap: balance;  /* 折り返したとき行の長さをそろえる */
+}
+
+/* スクロールして地図が見えてきたら、下からふわっと出てくる（jQuery が is-visible を付ける） */
+.is-js .reveal {
+    opacity: 0;
+    transform: translateY(48px);
+    transition: opacity 1s ease, transform 1s ease;
+}
+
+.is-js .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+
+/* 2-3. 右側のタブ（縦書き） */
+.side-tab {
+    position: fixed;
+    z-index: 10;
+    top: 50%;
+    right: 0;
+    padding: 22px 12px 22px 14px;
+    border-radius: 12px 0 0 12px;
+    background: var(--navy);
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-decoration: none;
+    writing-mode: vertical-rl;
+    box-shadow: -4px 4px 16px rgba(23, 50, 77, .3);
+    transform: translateY(-50%);
+    transition: padding .25s, background-color .25s;
+}
+
+.side-tab:hover,
+.side-tab:focus-visible {
+    padding-right: 20px;
+    background: #0d2236;
+}
+
+/* 縦書きの中でも「→」は横向きのまま表示する */
+.side-tab-arrow {
+    margin-top: .4em;
+    text-combine-upright: all;
+}
+
+/* お知らせ（「準備中です」など） */
+.toast {
+    display: none;
+    position: fixed;
+    z-index: 20;
+    left: 50%;
+    bottom: 32px;
+    width: max-content;
+    max-width: calc(100% - 32px);
+    padding: 12px 28px;
+    border-radius: 16px;
+    background: rgba(23, 50, 77, .94);
+    color: #fff;
+    font-weight: 700;
+    text-align: center;
+    box-shadow: var(--shadow);
+    transform: translateX(-50%);
+}
+
+
+/* ---------- 3. スキー場ページ ---------- */
+.resort-header {
+    position: relative;
+    overflow: hidden;
+    padding: 96px 20px 80px;
+    background: #fff;
+    text-align: center;
+}
+
+/* ページの代表写真を薄く敷く */
+.resort-header-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: .5;
+}
+
+/* 写真の下側をページの背景色になじませる */
+.resort-header::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 45%;
+    background: linear-gradient(transparent, var(--snow));
+}
+
+.resort-title {
+    position: relative;
+    z-index: 1;
+    padding-left: .08em;
+    font-family: var(--mincho);
+    font-weight: 900;
+    font-size: clamp(1.9rem, 7vw, 4rem);
+    line-height: 1.3;
+    letter-spacing: .08em;
+    text-shadow: 0 2px 0 #fff, 0 0 24px rgba(255, 255, 255, .95);
+}
+
+.back-link {
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .92);
+    color: var(--navy);
+    font-size: .9rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(23, 50, 77, .15);
+    transition: background-color .2s, color .2s;
+}
+
+.back-link:hover,
+.back-link:focus-visible {
+    background: var(--navy);
+    color: #fff;
+}
+
+.resort-header .back-link {
+    position: absolute;
+    z-index: 2;
+    top: 20px;
+    left: 20px;
+}
+
+.resort-main {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 20px 24px;
+}
+
+/* 説明文 */
+.resort-intro {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: -24px auto 56px;
+    padding: 28px 36px;
+    border-left: 6px solid var(--blue);
+    border-radius: 16px;
+    background: #fff;
+    font-size: 1.05rem;
+    line-height: 2;
+    box-shadow: var(--shadow);
+}
+
+.gallery-heading {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 20px;
+    font-family: var(--mincho);
+    font-weight: 900;
+    font-size: 1.5rem;
+    letter-spacing: .08em;
+}
+
+.photo-count {
+    color: #5b7086;
+    font-size: .9rem;
+}
+
+/* 写真一覧（パソコンでは横5列） */
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+}
+
+.gallery-link {
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    border-radius: 14px;
+    background: #dde6ee;
+    box-shadow: 0 4px 14px rgba(23, 50, 77, .15);
+}
+
+.gallery-link img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .5s;
+}
+
+.gallery-link:hover img,
+.gallery-link:focus-visible img {
+    transform: scale(1.07);
+}
+
+.back-bottom {
+    margin-top: 48px;
+    text-align: center;
+}
+
+
+/* ---------- 4. ライトボックス（写真の拡大表示） ---------- */
+.lightbox {
+    display: flex;
+    position: fixed;
+    z-index: 100;
+    inset: 0;
+    justify-content: center;
+    align-items: center;
+    background: rgba(8, 18, 30, .92);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .3s, visibility 0s .3s;  /* 閉じるときはフェードが終わってから隠す */
+}
+
+/* jQuery が is-open を付けると表示される */
+.lightbox.is-open {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity .3s, visibility 0s;
+}
+
+.lightbox-figure {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.lightbox-image {
+    max-width: 86vw;
+    max-height: 82vh;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, .5);
+}
+
+.lightbox-count {
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: .1em;
+}
+
+.lightbox-btn {
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .15);
+    color: #fff;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color .2s;
+}
+
+.lightbox-btn:hover,
+.lightbox-btn:focus-visible {
+    background: rgba(255, 255, 255, .32);
+}
+
+.lightbox-close {
+    top: 20px;
+    right: 20px;
+}
+
+.lightbox-prev,
+.lightbox-next {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.lightbox-prev {
+    left: 20px;
+}
+
+.lightbox-next {
+    right: 20px;
+}
+
+/* ライトボックスを開いている間は後ろのページをスクロールさせない */
+body.is-locked {
+    overflow: hidden;
+}
+
+
+/* ---------- 5. スマホ・タブレット対応 ---------- */
+@media (max-width: 1000px) {
+    .gallery {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* スマホでは右端のタブが地図や文字に重なるので、地図の下のボタンにする */
+@media (max-width: 700px) {
+    .side-tab {
+        position: static;
+        align-self: center;
+        margin: 0 16px 8px;
+        padding: 12px 26px;
+        border-radius: 999px;
+        font-size: .95rem;
+        letter-spacing: .06em;
+        writing-mode: horizontal-tb;
+        transform: none;
+    }
+
+    .side-tab:hover,
+    .side-tab:focus-visible {
+        padding-right: 26px;
+    }
+
+    .side-tab-arrow {
+        margin: 0 0 0 .4em;
+    }
+
+    /* お知らせはボタンに重ならないよう画面の上に出す */
+    .toast {
+        top: 20px;
+        bottom: auto;
+        padding: 12px 18px;
+        font-size: .85rem;
+    }
+}
+
+@media (max-width: 600px) {
+    /* スマホのタイトルは「スキー場」「絶景集！」の2行にして画面いっぱいに大きく */
+    .hero {
+        padding: 80px 16px;
+    }
+
+    .site-title {
+        font-size: 17vw;
+        line-height: 1.3;
+    }
+
+    .site-title span {
+        display: block;
+    }
+
+    .site-subtitle {
+        font-size: 1rem;
+    }
+
+    .map-section {
+        padding: 36px 8px 28px;
+    }
+
+    .resort-header {
+        padding: 84px 16px 64px;
+    }
+
+    .resort-intro {
+        margin-top: -16px;
+        padding: 20px 22px;
+        font-size: 1rem;
+    }
+
+    .gallery {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .lightbox-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1.6rem;
+    }
+
+    .lightbox-prev {
+        left: 8px;
+    }
+
+    .lightbox-next {
+        right: 8px;
+    }
+}
+
+/* 動きを減らす設定の人にはアニメーションを止める */
+@media (prefers-reduced-motion: reduce) {
+    .spot::before,
+    .sea-deco,
+    .scroll-cue-line::after {
+        animation: none;
+    }
+
+    .is-js .reveal {
+        transition: none;
+    }
+}

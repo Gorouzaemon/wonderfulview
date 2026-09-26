@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スキー場絶景集！</title>
+    <meta name="description" content="全国のスキー場で撮ってきた絶景写真を、日本地図から選んで見られるサイト。">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏔</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@600;700;900&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page-top">
+
+    <!-- 1画面目：タイトルだけを画面いっぱいに大きく -->
+    <header class="hero">
+        <div class="hero-inner">
+            <h1 class="site-title"><span>スキー場</span><span>絶景集！</span></h1>
+            <p class="site-subtitle">（スキー場以外もあるよ）</p>
+        </div>
+        <a class="scroll-cue" id="js-scroll-cue" href="#map">日本地図へ<span class="scroll-cue-line"></span></a>
+    </header>
+
+    <!-- 2画面目：スクロールすると、画面いっぱいの青い海に日本地図が出てくる -->
+    <main class="map-section" id="map">
+        <!-- 日本地図。スポットの位置は data-lat（緯度）・data-lon（経度）から script.js が自動で計算する -->
+        <div class="map reveal" id="js-map">
+            <!-- 海の飾り（波・クジラ・ヨット・海の名前） -->
+            <img class="sea-deco deco-boat" src="images/sea/boat.svg" alt="">
+            <img class="sea-deco deco-wave-1" src="images/sea/wave.svg" alt="">
+            <img class="sea-deco deco-wave-2" src="images/sea/wave.svg" alt="">
+            <img class="sea-deco deco-whale" src="images/sea/whale.svg" alt="">
+            <img class="sea-deco deco-lines-1" src="images/sea/wave-lines.svg" alt="">
+            <img class="sea-deco deco-lines-2" src="images/sea/wave-lines.svg" alt="">
+            <img class="sea-deco deco-lines-3" src="images/sea/wave-lines.svg" alt="">
+            <img class="sea-deco deco-lines-4" src="images/sea/wave-lines.svg" alt="">
+            <img class="sea-deco deco-lines-5" src="images/sea/wave-lines.svg" alt="">
+            <img class="sea-deco deco-lines-6" src="images/sea/wave-lines.svg" alt="">
+            <img class="sea-deco deco-side-1" src="images/sea/wave-lines.svg" alt="">
+            <img class="sea-deco deco-side-2" src="images/sea/wave.svg" alt="">
+            <img class="sea-deco deco-side-3" src="images/sea/wave-lines.svg" alt="">
+            <img class="sea-deco deco-side-4" src="images/sea/wave-lines.svg" alt="">
+            <span class="sea-label label-japan-sea" aria-hidden="true">日本海</span>
+            <span class="sea-label label-pacific" aria-hidden="true">太平洋</span>
+
+            <img class="map-image" src="images/japan-map.png" alt="日本地図">
+
+            <!-- ▼スキー場のスポット（クリックすると別のタブで開く）
+                 rel="opener" があると、開いたページの「日本地図にもどる」でそのタブを閉じて、この地図のタブに戻れる
+                 増やすときはこの a タグをコピーして、
+                 href（飛び先のページ）・data-lat / data-lon（Googleマップで調べた緯度・経度）・名前 を書きかえる -->
+            <a class="spot" href="madarao.html" target="_blank" rel="opener" data-lat="36.848" data-lon="138.320">
+                <span class="spot-name">斑尾高原</span>
+            </a>
+            <a class="spot" href="goryu.html" target="_blank" rel="opener" data-lat="36.668" data-lon="137.830">
+                <span class="spot-name">白馬47＆五竜</span>
+            </a>
+        </div>
+
+        <p class="map-hint">青い点にカーソルを合わせるとスキー場名が出るよ。クリックすると、そのスキー場の絶景集が別のタブで開くよ！</p>
+    </main>
+
+    <!-- 右側のタブ（スキー場以外の絶景サイトは準備中。できたら href="#" を新しいページに書きかえる） -->
+    <a class="side-tab" id="js-side-tab" href="#">
+        スキー場以外の絶景はこちら<span class="side-tab-arrow">→</span>
+    </a>
+
+    <footer class="site-footer">
+        <small>&copy; 2026 スキー場絶景集</small>
+    </footer>
+
+    <!-- お知らせ（「準備中です」などを一瞬だけ表示する） -->
+    <div class="toast" id="js-toast" role="status" aria-live="polite"></div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
