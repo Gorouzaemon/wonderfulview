@@ -500,12 +500,27 @@ a {
     width: 35%;
     height: auto;
     border-radius: 16px;
+    cursor: pointer;  /* クリックすると訪問数が出る */
 }
 
 .profile-text {
     flex: 1;
     font-size: 1.25rem;
     line-height: 2;
+}
+
+/* 訪問数（プロフィール写真をクリックすると下にちょろっと出る） */
+.visit-counter {
+    display: none;
+    width: fit-content;
+    margin: 20px auto 0;
+    padding: 6px 20px;
+    border-radius: 999px;
+    background: rgba(23, 50, 77, .88);
+    color: #fff;
+    font-size: .95rem;
+    font-weight: 700;
+    letter-spacing: .05em;
 }
 
 .copyright {

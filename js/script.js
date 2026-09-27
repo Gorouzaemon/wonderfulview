@@ -5,6 +5,7 @@
    3. 右側のタブ（トップページ）
    4. 写真の拡大表示＝ライトボックス（スキー場ページ）
    5. 「日本地図にもどる」ボタン（スキー場ページ）
+   6. 訪問数（トップページのプロフィール写真をクリック）
 ========================================================= */
 
 if (window.jQuery) {
@@ -15,6 +16,7 @@ if (window.jQuery) {
         setupSideTab();
         setupGallery();
         setupBackLink();
+        setupVisitCounter();
     });
 } else {
     // jQuery が読み込めなかったとき（ネットにつながっていないときなど）は、
@@ -282,5 +284,39 @@ function setupBackLink() {
         setTimeout(function () {
             location.href = href;
         }, 300);
+    });
+}
+
+
+/* ---------------------------------------------------------
+   6. 訪問数（アクセスカウンター）
+   ・トップページのプロフィール写真をクリックすると、下に訪問数がちょろっと出る
+   ・もう一度クリックすると隠れる
+   ・数字は GoatCounter（アクセス数を数えるサービス）から取ってくる
+     GoatCounter 側で最大4時間ほど前の数字が表示されるので、すぐには増えないことがある
+--------------------------------------------------------- */
+var GOATCOUNTER_TOTAL_URL = 'https://gorouzaemon.goatcounter.com/counter/TOTAL.json';
+
+function setupVisitCounter() {
+    var $counter = $('#js-visit-counter');
+    if (!$counter.length) return;
+
+    $('#js-profile-photo').on('click', function () {
+        // 出ているときはしまう
+        if ($counter.is(':visible')) {
+            $counter.stop(true, true).slideUp(200);
+            return;
+        }
+
+        $counter.text('訪問数を読み込み中…').stop(true, true).slideDown(200);
+
+        $.getJSON(GOATCOUNTER_TOTAL_URL)
+            .done(function (data) {
+                // data.count は「1,234」のような3桁区切りの文字列
+                $counter.text('これまでの訪問数：' + data.count);
+            })
+            .fail(function () {
+                $counter.text('訪問数を読み込めませんでした');
+            });
     });
 }

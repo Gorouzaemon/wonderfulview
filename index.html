@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@600;700;900&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
     <!-- ?v= の数字は、CSS や JS を直したら1つ増やす（ブラウザが古いファイルを使い続けないように） -->
-    <link rel="stylesheet" href="css/style.css?v=4">
+    <link rel="stylesheet" href="css/style.css?v=5">
 </head>
 <body class="page-top">
 
@@ -73,9 +73,12 @@
     <!-- フッター：製作者のプロフィール（左に写真、右に自己紹介） -->
     <footer class="profile-footer">
         <div class="profile">
-            <img class="profile-photo" src="images/profile.jpg" alt="五郎左衛門の写真">
+            <!-- 写真をクリックすると、下に訪問数がちょろっと出る -->
+            <img class="profile-photo" id="js-profile-photo" src="images/profile.jpg" alt="五郎左衛門の写真">
             <p class="profile-text">初めまして。このサイトを製作した五郎左衛門と言います。スキーは趣味程度ですが10年以上、色んなスキー場に行ってまいりました。これからも日本全国だけでなく世界中のスキー場に行き、その都度このサイトを更新していきます！！</p>
         </div>
+        <!-- 訪問数（ふだんは隠れている。数字は GoatCounter から取ってくる） -->
+        <p class="visit-counter" id="js-visit-counter" aria-live="polite"></p>
         <small class="copyright">&copy; 2026 スキー場絶景集</small>
     </footer>
 
@@ -83,6 +86,10 @@
     <div class="toast" id="js-toast" role="status" aria-live="polite"></div>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="js/script.js?v=4"></script>
+    <script src="js/script.js?v=5"></script>
+
+    <!-- アクセス数を数える（GoatCounter）。ネットに公開したページで開いたときだけ数えられる -->
+    <script data-goatcounter="https://gorouzaemon.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
