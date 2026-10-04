@@ -26,11 +26,11 @@ if (window.jQuery) {
 
 
 /* ---------------------------------------------------------
-   1. 日本地図のスポット
+   1. 地図のスポット（日本地図と、白馬村＆小谷村の地図）
    ・HTML の data-lat（緯度）/ data-lon（経度）から、地図のどこに点を置くか計算する
    ・パソコン：カーソルを乗せるだけで青 → 赤になり、スキー場名が出る（見た目は CSS の .is-active）
    ・スマホ：1回目のタップで名前を出し、2回目で開く
-   ・開くページは HTML の target="_blank" で別のタブになる
+   ・日本地図の点は HTML の target="_blank" で別のタブで開く
 --------------------------------------------------------- */
 
 // 地図画像（日本地図 緑.png）がどんな図法で描かれているかを計算で割り出した値。
@@ -60,13 +60,28 @@ function latLonToPercent(lat, lon) {
 }
 
 function setupMapSpots() {
-    var $spots = $('#js-map .spot');
+    var $spots = $('.spot');
     if (!$spots.length) return;
 
-    // 緯度・経度から点の位置を決める
-    $spots.each(function () {
+    // 日本地図：緯度・経度から点の位置を決める
+    $('#js-map .spot').each(function () {
         var pos = latLonToPercent($(this).data('lat'), $(this).data('lon'));
         $(this).css({ left: pos.left + '%', top: pos.top + '%' });
+    });
+
+    // 白馬村＆小谷村の地図：地図の上下左右の端の緯度・経度（data-north など）から比例で位置を決める
+    $('.js-area-map').each(function () {
+        var $map = $(this);
+        var north = $map.data('north');
+        var south = $map.data('south');
+        var west = $map.data('west');
+        var east = $map.data('east');
+
+        $map.find('.spot').each(function () {
+            var left = ($(this).data('lon') - west) / (east - west) * 100;
+            var top = (north - $(this).data('lat')) / (north - south) * 100;
+            $(this).css({ left: left + '%', top: top + '%' });
+        });
     });
 
     // パソコン（マウス）：カーソルを乗せただけで赤＋名前、外したら元に戻す
@@ -269,9 +284,10 @@ function setupGallery() {
    5. 「日本地図にもどる」ボタン
    ・地図から別のタブで開いたときは、このタブを閉じて元の地図のタブに戻る
    ・このページを直接開いたとき（元の地図のタブがないとき）は、ふつうに地図のページへ移動する
+   ・「白馬村＆小谷村にもどる」などの日本地図以外へのボタンは、ふつうのリンクのまま
 --------------------------------------------------------- */
 function setupBackLink() {
-    $('.back-link').on('click', function (e) {
+    $('.back-link[href="index.html"]').on('click', function (e) {
         var mapTab = window.opener;  // このタブを開いた元のタブ（地図のページ）
         if (!mapTab || mapTab.closed) return;  // 元のタブがない → ふつうのリンクとして地図へ
 

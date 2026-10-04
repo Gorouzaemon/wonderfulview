@@ -334,6 +334,22 @@ a {
     }
 }
 
+/* エリアのボタン（白馬村＆小谷村など、いくつかのスキー場をまとめた点）はふつうより少し大きく */
+.spot.spot-area {
+    width: 30px;
+    height: 30px;
+    margin: -15px 0 0 -15px;
+}
+
+.spot.spot-area::before,
+.spot.spot-area::after {
+    inset: 6px;  /* → 直径18px（ふつうは10px） */
+}
+
+.spot.spot-area::after {
+    border-width: 3px;
+}
+
 /* カーソルを乗せたとき（jQuery が is-active を付ける）→ 赤くなる */
 .spot.is-active,
 .spot:focus-visible {
@@ -671,9 +687,84 @@ a {
     transform: scale(1.07);
 }
 
+/* ページの下の「もどる」ボタン（2つ並べるときもある） */
 .back-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
     margin-top: 48px;
+}
+
+
+/* 白馬村＆小谷村のページ：村の地図の青い点からスキー場を選ぶ */
+.area-map-section {
+    margin-bottom: 64px;
     text-align: center;
+}
+
+.area-map {
+    position: relative;
+    width: min(100%, 460px);
+    margin: 0 auto;
+}
+
+.area-map-image {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 10px 16px rgba(7, 70, 30, .25));
+}
+
+/* 地図の上の村の名前 */
+.area-label {
+    position: absolute;
+    padding-left: .3em;
+    color: rgba(255, 255, 255, .9);
+    font-family: var(--mincho);
+    font-weight: 700;
+    font-size: 1.3rem;
+    letter-spacing: .3em;
+    white-space: nowrap;
+    text-shadow: 0 1px 3px rgba(0, 60, 20, .45);
+    pointer-events: none;
+    translate: -50% -50%;
+}
+
+.label-otari  { top: 22%; left: 70%; }
+.label-hakuba { top: 86%; left: 32%; }
+
+.area-hint {
+    margin-top: 20px;
+    font-size: .95rem;
+    font-weight: 700;
+}
+
+/* 地図の下のスキー場ボタン（スマホでも押しやすいように） */
+.area-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    max-width: 760px;
+    margin: 16px auto 0;
+}
+
+.area-list a {
+    display: block;
+    padding: 10px 20px;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--navy);
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(23, 50, 77, .15);
+    transition: background-color .2s, color .2s;
+}
+
+.area-list a:hover,
+.area-list a:focus-visible {
+    background: var(--navy);
+    color: #fff;
 }
 
 

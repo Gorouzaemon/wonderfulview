@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@600;700;900&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
     <!-- ?v= の数字は、CSS や JS を直したら1つ増やす（ブラウザが古いファイルを使い続けないように） -->
-    <link rel="stylesheet" href="css/style.css?v=5">
+    <link rel="stylesheet" href="css/style.css?v=6">
 </head>
 <body class="page-top">
 
@@ -54,8 +54,9 @@
             <a class="spot" href="madarao.html" target="_blank" rel="opener" data-lat="36.848" data-lon="138.320">
                 <span class="spot-name">斑尾高原</span>
             </a>
-            <a class="spot" href="goryu.html" target="_blank" rel="opener" data-lat="36.668" data-lon="137.830">
-                <span class="spot-name">白馬47＆五竜</span>
+            <!-- 白馬エリア（白馬村＆小谷村）は少し大きいボタン。クリックすると、村の地図からスキー場を選ぶページへ -->
+            <a class="spot spot-area" href="hakuba.html" target="_blank" rel="opener" data-lat="36.715" data-lon="137.850">
+                <span class="spot-name">白馬村＆小谷村</span>
             </a>
             <a class="spot" href="zao.html" target="_blank" rel="opener" data-lat="38.160" data-lon="140.415">
                 <span class="spot-name">蔵王温泉</span>
@@ -95,7 +96,7 @@
     <div class="toast" id="js-toast" role="status" aria-live="polite"></div>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="js/script.js?v=5"></script>
+    <script src="js/script.js?v=6"></script>
 
     <!-- アクセス数を数える（GoatCounter）。ネットに公開したページで開いたときだけ数えられる（PC内のファイルとして開いたときは数えない） -->
     <script data-goatcounter="https://gorouzaemon.goatcounter.com/count"
