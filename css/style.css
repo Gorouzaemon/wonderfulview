@@ -7,6 +7,7 @@
       2-2. 日本地図（青い海・波の絵・スポット）
       2-3. 右側タブ・お知らせ
       2-4. フッター（製作者のプロフィール）
+      2-5. 本日のスキー場営業情報（日本地図の下の表）
    3. スキー場ページ（見出し・説明文・写真一覧）
    4. ライトボックス（写真の拡大表示）
    5. スマホ・タブレット対応
@@ -548,6 +549,155 @@ a {
 }
 
 
+/* 2-5. 本日のスキー場営業情報（日本地図の下の表） */
+.snow-section {
+    padding: 56px 72px 0;  /* 左右72px：右端に固定しているタブと重ならないように */
+}
+
+.snow-card {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 40px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, .92);
+    box-shadow: var(--shadow);
+}
+
+.snow-heading {
+    padding-left: .08em;
+    font-family: var(--mincho);
+    font-weight: 900;
+    font-size: clamp(1.4rem, 3.4vw, 2rem);
+    line-height: 1.4;
+    letter-spacing: .08em;
+    text-align: center;
+}
+
+/* 見出しの下の区切り線（タイトルの下の線と同じ） */
+.snow-heading::after {
+    content: "";
+    display: block;
+    width: min(420px, 90%);
+    height: 2px;
+    margin: 14px auto 0;
+    background: linear-gradient(90deg, transparent, var(--navy), transparent);
+    opacity: .35;
+}
+
+.snow-table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+}
+
+.snow-table th,
+.snow-table td {
+    padding: 11px 10px;
+    border-bottom: 1px solid rgba(23, 50, 77, .12);
+    text-align: center;
+}
+
+.snow-table thead th {
+    border-bottom: 2px solid var(--navy);
+    font-size: .9rem;
+    letter-spacing: .08em;
+}
+
+/* スキー場名は左そろえ（名前を押すと、そのスキー場の絶景集が別のタブで開く） */
+.snow-table tbody th,
+.snow-table thead th:first-child {
+    text-align: left;
+}
+
+/* 積雪・滑走可否・コースの列の幅をそろえる（中身によって列の位置が変わらないように） */
+.snow-table thead th:nth-child(2),
+.snow-table thead th:nth-child(3) {
+    width: 22%;
+}
+
+.snow-table thead th:nth-child(4) {
+    width: 13%;
+}
+
+.snow-name {
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.snow-name:hover,
+.snow-name:focus-visible {
+    color: var(--blue);
+    text-decoration: underline;
+}
+
+/* スキー場名の横の小さな「公式」リンク */
+.snow-official {
+    display: inline-block;
+    margin-left: .6em;
+    color: #5b7086;
+    font-size: .75rem;
+    font-weight: 400;
+}
+
+.snow-depth,
+.snow-courses {
+    white-space: nowrap;
+}
+
+/* 滑走可否の色：全面可＝水色、大部分可＝黄緑、一部可＝黄色、クローズ＝灰色 */
+.snow-status {
+    display: inline-block;
+    min-width: 6em;
+    padding: 2px 12px;
+    border-radius: 999px;
+    font-size: .95rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.snow-status.is-full {
+    background: #8edcf7;
+    color: #0b3a55;
+}
+
+.snow-status.is-mostly {
+    background: #bfe77f;
+    color: #2c4a0c;
+}
+
+.snow-status.is-partial {
+    background: #ffe35c;
+    color: #4f4200;
+}
+
+.snow-status.is-closed {
+    background: #c9d0d6;
+    color: #37424c;
+}
+
+/* 読み取れなかったとき（押すと公式サイトが開く） */
+.snow-status.is-unknown {
+    border: 1px dashed #8a9aa8;
+    color: #4a5e72;
+    font-size: .8rem;
+    font-weight: 400;
+}
+
+.snow-note {
+    margin-top: 16px;
+    font-size: .85rem;
+    line-height: 1.7;
+    text-align: center;
+    text-wrap: balance;
+}
+
+/* 2つの文は、幅が足りないときに文の切れ目で折り返す */
+.snow-note span {
+    display: inline-block;
+}
+
+
 /* ---------- 3. スキー場ページ ---------- */
 .resort-header {
     position: relative;
@@ -907,6 +1057,11 @@ body.is-locked {
         padding-right: 20px;
         padding-left: 20px;
     }
+
+    /* 営業情報の表も同じ。下はボタンとくっつかないように空ける */
+    .snow-section {
+        padding: 40px 20px 24px;
+    }
 }
 
 @media (max-width: 600px) {
@@ -934,6 +1089,52 @@ body.is-locked {
 
     .profile-footer {
         padding: 32px 12px 16px;
+    }
+
+    /* 営業情報の表：スマホでは余白を小さくして、横にはみ出さないように */
+    .snow-section {
+        padding: 32px 12px 24px;
+    }
+
+    .snow-card {
+        padding: 22px 10px 18px;
+    }
+
+    .snow-table {
+        margin-top: 14px;
+        font-size: .85rem;
+    }
+
+    .snow-table th,
+    .snow-table td {
+        padding: 9px 2px;
+    }
+
+    /* 列の幅は中身に合わせる（4列あるので固定すると足りなくなる） */
+    .snow-table thead th:nth-child(n) {
+        width: auto;
+        font-size: .78rem;
+        letter-spacing: 0;
+        white-space: nowrap;
+    }
+
+    /* 「公式」はスキー場名の下の行に置いて、横幅を節約する */
+    .snow-official {
+        display: block;
+        margin-left: 0;
+        font-size: .7rem;
+        line-height: 1.4;
+    }
+
+    .snow-status {
+        min-width: 0;
+        padding: 2px 7px;
+        font-size: .78rem;
+    }
+
+    .snow-status.is-unknown {
+        padding: 2px 5px;
+        font-size: .68rem;
     }
 
     /* スマホは写真を上、文章を下に縦に並べて、どちらも大きく見せる */

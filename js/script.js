@@ -6,6 +6,7 @@
    4. 写真の拡大表示＝ライトボックス（スキー場ページ）
    5. 「日本地図にもどる」ボタン（スキー場ページ）
    6. 訪問数（トップページのプロフィール写真をクリック）
+   7. 本日のスキー場営業情報（トップページの日本地図の下の表）
 ========================================================= */
 
 if (window.jQuery) {
@@ -17,6 +18,7 @@ if (window.jQuery) {
         setupGallery();
         setupBackLink();
         setupVisitCounter();
+        setupSnowTable();
     });
 } else {
     // jQuery が読み込めなかったとき（ネットにつながっていないときなど）は、
@@ -335,4 +337,62 @@ function setupVisitCounter() {
                 $counter.text('訪問数を読み込めませんでした');
             });
     });
+}
+
+
+/* ---------------------------------------------------------
+   7. 本日のスキー場営業情報（トップページの日本地図の下の表）
+   ・data/snow.js の中身（window.SNOW_DATA）を表にする
+     data/snow.js は GitHub 上のプログラム（tools/update_snow.py）が毎日書き換える
+   ・滑走可否の色は CSS の .snow-status（全面可＝水色、大部分可＝黄緑、一部可＝黄色、クローズ＝灰色）
+   ・コースの欄は「滑走できるコース数/全コース数」。読めなかったスキー場は「—」
+   ・読み取れなかったスキー場や、更新が止まった古いデータは、
+     間違った情報を出さないように「公式サイトを確認」にする
+--------------------------------------------------------- */
+var SNOW_STATUS = {
+    full: { label: '全面可', className: 'is-full' },
+    mostly: { label: '大部分可', className: 'is-mostly' },
+    partial: { label: '一部可', className: 'is-partial' },
+    closed: { label: 'クローズ', className: 'is-closed' },
+    unknown: { label: '公式サイトを確認', className: 'is-unknown' }
+};
+var SNOW_MAX_AGE_DAYS = 3;  // これより古いデータは表示しない
+
+function setupSnowTable() {
+    var $rows = $('#js-snow-rows');
+    var data = window.SNOW_DATA;
+    if (!$rows.length || !data) return;  // 読み込めなければ HTML に書いてあるお知らせのまま
+
+    var ageDays = (Date.now() - new Date(data.updatedAt).getTime()) / (24 * 60 * 60 * 1000);
+    var isOld = !(ageDays <= SNOW_MAX_AGE_DAYS);
+
+    $.each(data.resorts, function (i, resort) {
+        var status = SNOW_STATUS[isOld ? 'unknown' : resort.status] || SNOW_STATUS.unknown;
+
+        // 読み取れなかったときの「公式サイトを確認」は、押すと公式サイトが開く
+        var $status = status === SNOW_STATUS.unknown
+            ? $('<a target="_blank" rel="noopener">').attr('href', resort.official)
+            : $('<span>');
+        $status.addClass('snow-status ' + status.className).text(status.label);
+
+        // スキー場名は地図の点と同じく別のタブで開く（rel="opener" で「日本地図にもどる」が使える）
+        var $name = $('<a class="snow-name" target="_blank" rel="opener">').attr('href', resort.page).text(resort.name);
+        var $official = $('<a class="snow-official" target="_blank" rel="noopener">').attr('href', resort.official).text('公式');
+
+        $('<tr>').append(
+            $('<th scope="row">').append($name, $official),
+            $('<td class="snow-depth">').text((!isOld && resort.snow) || '—'),
+            $('<td>').append($status),
+            $('<td class="snow-courses">').text((!isOld && resort.courses) || '—')
+        ).appendTo($rows);
+    });
+
+    $('#js-snow-table').prop('hidden', false);
+    // 2つの文は、幅が足りないときに文の切れ目で折り返す（CSS の .snow-note span）
+    $('#js-snow-note').empty().append(
+        $('<span>').text(isOld
+            ? '最終更新は ' + data.updatedLabel + ' です。自動更新が止まっているようなので、最新の情報は公式サイトでご確認ください。'
+            : data.updatedLabel + ' 時点の情報です。正確な情報は各スキー場の公式サイトでご確認ください。'),
+        $('<span>').text('コースの欄は「滑走できるコース数/全コース数」です。')
+    );
 }

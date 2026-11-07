@@ -20,7 +20,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@600;700;900&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
     <!-- ?v= の数字は、CSS や JS を直したら1つ増やす（ブラウザが古いファイルを使い続けないように） -->
-    <link rel="stylesheet" href="css/style.css?v=6">
+    <link rel="stylesheet" href="css/style.css?v=7">
 </head>
 <body class="page-top">
 
@@ -86,6 +86,27 @@
         <p class="map-hint">青い点にカーソルを合わせるとスキー場名が出るよ。クリックすると、そのスキー場の絶景集が別のタブで開くよ！</p>
     </main>
 
+    <!-- 日本地図の下：本日のスキー場営業情報（積雪と滑走可否の表）
+         中身は data/snow.js。GitHub 上のプログラム（tools/update_snow.py）が毎日書き換えて、script.js が表にする -->
+    <section class="snow-section" id="snow" aria-labelledby="js-snow-heading">
+        <div class="snow-card">
+            <h2 class="snow-heading" id="js-snow-heading">本日のスキー場営業情報</h2>
+            <table class="snow-table" id="js-snow-table" aria-labelledby="js-snow-heading" hidden>
+                <thead>
+                    <tr>
+                        <th scope="col">スキー場</th>
+                        <th scope="col">積雪</th>
+                        <th scope="col">滑走可否</th>
+                        <th scope="col">コース</th>
+                    </tr>
+                </thead>
+                <tbody id="js-snow-rows"></tbody>
+            </table>
+            <!-- データを読み込めなかったときは、この文章がそのまま出る -->
+            <p class="snow-note" id="js-snow-note">営業情報を読み込めませんでした。各スキー場の公式サイトをご確認ください。</p>
+        </div>
+    </section>
+
     <!-- 右側のタブ（スキー場以外の絶景サイトは準備中。できたら href="#" を新しいページに書きかえる） -->
     <a class="side-tab" id="js-side-tab" href="#">
         スキー場以外の絶景はこちら<span class="side-tab-arrow">→</span>
@@ -107,7 +128,9 @@
     <div class="toast" id="js-toast" role="status" aria-live="polite"></div>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="js/script.js?v=6"></script>
+    <!-- スキー場の営業情報のデータ（毎日自動で書き換わるので ?v= はいらない） -->
+    <script src="data/snow.js"></script>
+    <script src="js/script.js?v=7"></script>
 
     <!-- アクセス数を数える（GoatCounter）。ネットに公開したページで開いたときだけ数えられる（PC内のファイルとして開いたときは数えない） -->
     <script data-goatcounter="https://gorouzaemon.goatcounter.com/count"

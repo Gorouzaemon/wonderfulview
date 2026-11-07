@@ -1,0 +1,56 @@
+# スキー場の積雪と滑走可否を、毎日自動で更新するしくみ（GitHub Actions）
+#
+# ・毎朝 9時17分（日本時間）ごろ、GitHub のコンピューターが tools/update_snow.py を1回動かす。
+#   AI は使っていない。決まった公式ページを読んで data/snow.js を書き換えるだけのプログラム。
+# ・GitHub の混雑具合で、動き出すのが遅れることがある（数十分くらい）。
+# ・公開リポジトリなので無料。手動で動かしたいときは Actions タブの「Run workflow」を押す。
+# ・プログラムやこのファイルを直してアップしたときも、確認のために1回動く。
+# ・読めなかったスキー場があると、この処理が「失敗」になって GitHub からメールが届く。
+#   そのスキー場はページに「公式サイトを確認」と出るだけで、他のスキー場はふつうに更新される。
+name: スキー場情報の更新
+
+on:
+  schedule:
+    - cron: '17 0 * * *'  # 世界標準時の 0時17分 ＝ 日本時間の 9時17分
+  workflow_dispatch:      # 手動でも動かせるように
+  push:                   # プログラムやこのファイルを直してアップしたときも動かす
+    branches: [main]
+    paths:
+      - tools/update_snow.py
+      - .github/workflows/update-snow.yml
+
+permissions:
+  contents: write  # data/snow.js をコミットするため
+  pages: write     # サイトの公開し直しを頼むため
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: 公式サイトを読んで data/snow.js を作り直す
+        id: update
+        continue-on-error: true  # 読めないスキー場があっても、読めた分は公開する
+        run: python3 tools/update_snow.py
+
+      - name: 変わっていたらコミットして、サイトを公開し直す
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add data/snow.js
+          if git diff --cached --quiet; then
+            echo "変更なし"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "スキー場情報を自動更新"
+          git push
+          # この方法のコミットでは GitHub Pages が自動で更新されないので、公開し直しを頼む
+          gh api --method POST "repos/${{ github.repository }}/pages/builds"
+
+      - name: 読めなかったスキー場があれば、失敗として知らせる
+        if: steps.update.outcome == 'failure'
+        run: exit 1
