@@ -1,7 +1,7 @@
 // このファイルは tools/update_snow.py が毎日自動で書き換えます（手で直さなくてOK）
 window.SNOW_DATA = {
-  "updatedAt": "2026-11-07T21:40:15+09:00",
-  "updatedLabel": "11月7日 21時40分",
+  "updatedAt": "2026-11-08T14:58:06+09:00",
+  "updatedLabel": "11月8日 14時58分",
   "resorts": [
     {
       "id": "zao",
