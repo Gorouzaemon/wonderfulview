@@ -1,7 +1,7 @@
 // このファイルは tools/update_snow.py が毎日自動で書き換えます（手で直さなくてOK）
 window.SNOW_DATA = {
-  "updatedAt": "2026-11-16T15:24:09+09:00",
-  "updatedLabel": "11月16日 15時24分",
+  "updatedAt": "2026-11-17T07:59:53+09:00",
+  "updatedLabel": "11月17日 7時59分",
   "resorts": [
     {
       "id": "zao",
@@ -80,9 +80,9 @@ window.SNOW_DATA = {
       "name": "奥伊吹",
       "page": "okuibuki.html",
       "official": "https://www.okuibuki.co.jp/gelande/",
-      "snow": null,
-      "status": "unknown",
-      "courses": null
+      "snow": "70cm",
+      "status": "partial",
+      "courses": "1/13"
     },
     {
       "id": "biwako",
