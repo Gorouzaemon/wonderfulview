@@ -4,7 +4,7 @@
 data/snow.js を作り直すプログラム。
 
 ・AI は使っていない。決まったページを1回ずつ読んで、決まった場所の文字を拾うだけ。
-・GitHub Actions が毎日1回、自動で動かす（.github/workflows/update-snow.yml）。
+・GitHub Actions が毎日2回（朝7時30分と昼12時47分ごろ）、自動で動かす（.github/workflows/update-snow.yml）。
 ・Python の標準機能だけで動くので、何もインストールしなくてよい。
 
 手元で試すとき（サイトのフォルダで実行）:
@@ -115,10 +115,13 @@ OKUIBUKI_COURSE_WORDS = {
     "OPEN": FULL,
     "CLOSE": CLOSED,
     "CLOSED": CLOSED,
-    "○": FULL,
+    "○": FULL,       # ページでは赤い丸の印（lcl-course__mark）
     "◯": FULL,
     "×": CLOSED,
+    "準備中": CLOSED,  # まだ滑れない
 }
+# 奥伊吹の「オープンコース予定」で数えないグループ（キッズパークなど、ゲレンデのコースではないもの）
+OKUIBUKI_SKIP_GROUPS = re.compile(r"雪遊び|レジャー")
 HAPPO_COURSE_WORDS = {
     "○": FULL,
     "△": PARTIAL,  # 一部滑走不可
@@ -401,6 +404,36 @@ def read_hakuba(page, slug):
     raise Unreadable(f"{name} のリフトの表が見つからない")
 
 
+def okuibuki_course_marks(page):
+    """奥伊吹の「オープンコース予定」の欄から、コースごとの印を取り出す。
+    同じ形の「リフト運行予定」の欄と、キッズパークなどの雪遊びのグループは数えない"""
+    for section in page.split('lcl-course-update">')[1:]:
+        if "オープンコース" in section[:100]:
+            break
+    else:
+        raise Unreadable("オープンコースの欄が見つからない")
+    section = section.split("lcl-lift")[0]  # ここから下はリフトの欄
+    marks = []
+    for group in re.split(r'<div class="lcl-course-group">', section)[1:]:
+        heading = plain(first(r"<h3[^>]*>(.*?)</h3>", group, "コースのグループ名"))
+        if not OKUIBUKI_SKIP_GROUPS.search(heading):
+            marks += re.findall(r'<div class="lcl-course__status">(.*?)</div>', group)
+    if not marks:
+        raise Unreadable("コースの欄が見つからない")
+    return marks
+
+
+def okuibuki_word(mark):
+    """コース1本の印 → 言葉"""
+    if not mark.strip():
+        return "×"  # 何も書かれていないコースはオープンしていない
+    if plain(mark):
+        return plain(mark)  # 「準備中」など
+    if re.search(r"lcl-course__mark|circle|maru|open", mark, re.IGNORECASE):
+        return "○"  # 文字のない丸印（ページでは赤い丸）
+    raise Unreadable("コースの印の意味が分からない")
+
+
 def read_okuibuki(page):
     """奥伊吹：「本日の営業」が CLOSE ならクローズ。OPEN ならコースごとの印を数える"""
     page = squeeze(page)
@@ -412,24 +445,14 @@ def read_okuibuki(page):
     )
     date = to_date(date_text)
     snow = [(to_cm(first(r'lcl-open-item__ttl">積雪</dt>\s*<dd[^>]*>(.*?)</dd>', page, "積雪")), date)]
-    marks = re.findall(r'<div class="lcl-course__status">(.*?)</div>', page)
+    marks = okuibuki_course_marks(page)
 
     if word in ("CLOSE", "CLOSED"):
-        return report(CLOSED, snow, date, (0, len(marks)) if marks else None)
+        return report(CLOSED, snow, date, (0, len(marks)))
     if word != "OPEN":
         raise Unreadable(f"知らない言葉「{word}」")
 
-    words = []
-    for mark in marks:
-        if not mark.strip():
-            words.append("×")  # 何も書かれていないコースはオープンしていない
-        elif plain(mark):
-            words.append(plain(mark))
-        elif re.search(r"circle|maru|open", mark, re.IGNORECASE):
-            words.append("○")  # 文字のない丸印のアイコン
-        else:
-            raise Unreadable("コースの印の意味が分からない")
-    counts = tally(words, OKUIBUKI_COURSE_WORDS)
+    counts = tally([okuibuki_word(mark) for mark in marks], OKUIBUKI_COURSE_WORDS)
     if judge(*counts) == CLOSED:
         raise Unreadable("OPEN の日なのにコースの印がひとつもない")
     return report(judge(*counts), snow, date, course_pair(*counts))
