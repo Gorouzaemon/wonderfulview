@@ -1,7 +1,7 @@
 // このファイルは tools/update_snow.py が毎日自動で書き換えます（手で直さなくてOK）
 window.SNOW_DATA = {
-  "updatedAt": "2026-11-15T15:25:42+09:00",
-  "updatedLabel": "11月15日 15時25分",
+  "updatedAt": "2026-11-16T15:24:09+09:00",
+  "updatedLabel": "11月16日 15時24分",
   "resorts": [
     {
       "id": "zao",
@@ -18,8 +18,8 @@ window.SNOW_DATA = {
       "page": "madarao.html",
       "official": "https://www.madarao.jp/ski/conditions",
       "snow": null,
-      "status": "unknown",
-      "courses": null
+      "status": "closed",
+      "courses": "0/32"
     },
     {
       "id": "shiga",
@@ -35,8 +35,8 @@ window.SNOW_DATA = {
       "name": "白馬コルチナ",
       "page": "cortina.html",
       "official": "https://www.hakubavalley.com/weather/detail_cortina/",
-      "snow": null,
-      "status": "unknown",
+      "snow": "0cm",
+      "status": "closed",
       "courses": null
     },
     {
@@ -44,8 +44,8 @@ window.SNOW_DATA = {
       "name": "栂池高原",
       "page": "tsugaike.html",
       "official": "https://www.hakubavalley.com/weather/detail_tsugaike/",
-      "snow": null,
-      "status": "unknown",
+      "snow": "0cm",
+      "status": "closed",
       "courses": null
     },
     {
@@ -54,26 +54,26 @@ window.SNOW_DATA = {
       "page": "iwatake.html",
       "official": "https://www.hakubavalley.com/weather/detail_iwatake/",
       "snow": null,
-      "status": "unknown",
-      "courses": null
+      "status": "closed",
+      "courses": "0/8"
     },
     {
       "id": "happo",
       "name": "白馬八方尾根",
       "page": "happo.html",
       "official": "https://www.hakubavalley.com/weather/detail_happo/",
-      "snow": null,
-      "status": "unknown",
-      "courses": null
+      "snow": "0cm",
+      "status": "closed",
+      "courses": "0/33"
     },
     {
       "id": "goryu",
       "name": "白馬47＆五竜",
       "page": "goryu.html",
       "official": "https://www.hakubavalley.com/weather/",
-      "snow": null,
-      "status": "unknown",
-      "courses": null
+      "snow": "0cm",
+      "status": "closed",
+      "courses": "0/39"
     },
     {
       "id": "okuibuki",
