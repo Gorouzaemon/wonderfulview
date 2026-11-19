@@ -13,6 +13,8 @@ data/snow.js を作り直すプログラム。
 大事な決まり:
 ・読めなかったスキー場は、前回の数字を使い回さず「unknown」にする（ページには「公式サイトを確認」と出る）。
 ・知らない言葉が出てきたら、勝手に推測せず「unknown」にする。
+  ただし「運休」「クローズ」「天候回復待ち」のように、はっきり「今は滑れない」という意味の言葉は、
+  どのスキー場でもクローズとして読む（CLOSED_WORDS）。
 ・更新が止まっている古い情報は使わない（オフシーズンのページには春の積雪が残っているため）。
 ・滑走可否が読めなかったら、最後に失敗として終わる（GitHub がメールで知らせてくれる）。
 ・コース数だけが読めなかったときは「—」にするだけで、失敗にはしない。
@@ -68,6 +70,15 @@ UNKNOWN = "unknown"  # 読めなかった（ページには「公式サイトを
 # 公式サイトの言葉 → 状態。ここに無い言葉が出てきたら「読めなかった」扱いになる。
 # 新しい言葉が出てきたら、ここに1行足せばよい。
 
+# どのスキー場でも「今は滑れない」という意味がはっきりしている言葉。
+# 下のスキー場ごとの表に無くても、これらはクローズとして読む（後ろに「(強風)」などの理由が付いていてもよい）
+CLOSED_WORDS = {
+    "クローズ", "CLOSE", "CLOSED", "閉鎖", "閉鎖中", "滑走不可", "滑走禁止",
+    "運休", "運休中", "休止", "休止中", "休業", "臨時休業", "営業休止", "営業中止", "営業終了", "営業時間外",
+    "準備中", "調整中", "整備中", "点検中", "圧雪中",
+    "天候回復待", "天候回復待ち", "天候調査中", "強風運休", "強風のため運休",
+}
+
 # スキー場全体の言葉（そのまま4段階になる）
 HAKUBA_WORDS = {
     "全面可能": FULL,
@@ -92,6 +103,7 @@ SHIGA_WORDS = {
     "閉鎖中": CLOSED,
     "滑走不可": CLOSED,
     "準備中": CLOSED,
+    "天候回復待": CLOSED,  # 2026/11/19 に奥志賀高原で初めて出た
 }
 BIWAKO_WORDS = {
     "オープン予定": FULL,
@@ -200,16 +212,24 @@ def first(pattern, text, what):
     return found.group(1)
 
 
+def word_state(word, table):
+    """言葉 → 状態。表に無い言葉でも、はっきり「今は滑れない」という意味ならクローズにする。
+    それ以外の知らない言葉は「読めなかった」にする"""
+    if word in table:
+        return table[word]
+    base = re.sub(r"\s*\([^()]*\)$", "", word)  # 「クローズ(強風)」→「クローズ」
+    if base in CLOSED_WORDS or table.get(base) == CLOSED:
+        return CLOSED
+    raise Unreadable(f"知らない言葉「{word}」")
+
+
 def tally(words, table):
     """コース1本ごとの言葉を数える。戻り値は (滑れる数, 一部だけ滑れる数, 滑れない数)"""
     if not words:
         raise Unreadable("コースの一覧が見つからない")
     counts = {FULL: 0, PARTIAL: 0, CLOSED: 0}
     for word in words:
-        word = plain(word)
-        if word not in table:
-            raise Unreadable(f"知らない言葉「{word}」")
-        counts[table[word]] += 1
+        counts[word_state(plain(word), table)] += 1
     return counts[FULL], counts[PARTIAL], counts[CLOSED]
 
 
@@ -390,9 +410,7 @@ def read_hakuba(page, slug):
     snow = [(to_cm(first(r'snow_status">\s*<span class="status-item">(.*?)</span>', item, "積雪")), date)]
 
     if label:
-        if label not in HAKUBA_WORDS:
-            raise Unreadable(f"知らない言葉「{label}」")
-        return report(HAKUBA_WORDS[label], snow, date)
+        return report(word_state(label, HAKUBA_WORDS), snow, date)
 
     # シーズン前は滑走可否が空欄になる。リフトが全部止まっていればクローズとみなす
     for lift_item in page.split('<div class="lift-item')[1:]:
@@ -447,10 +465,8 @@ def read_okuibuki(page):
     snow = [(to_cm(first(r'lcl-open-item__ttl">積雪</dt>\s*<dd[^>]*>(.*?)</dd>', page, "積雪")), date)]
     marks = okuibuki_course_marks(page)
 
-    if word in ("CLOSE", "CLOSED"):
+    if word_state(word, {"OPEN": FULL, "CLOSE": CLOSED, "CLOSED": CLOSED}) == CLOSED:
         return report(CLOSED, snow, date, (0, len(marks)))
-    if word != "OPEN":
-        raise Unreadable(f"知らない言葉「{word}」")
 
     counts = tally([okuibuki_word(mark) for mark in marks], OKUIBUKI_COURSE_WORDS)
     if judge(*counts) == CLOSED:
