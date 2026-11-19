@@ -1,7 +1,7 @@
 // このファイルは tools/update_snow.py が毎日自動で書き換えます（手で直さなくてOK）
 window.SNOW_DATA = {
-  "updatedAt": "2026-11-19T12:43:20+09:00",
-  "updatedLabel": "11月19日 12時43分",
+  "updatedAt": "2026-11-19T21:12:08+09:00",
+  "updatedLabel": "11月19日 21時12分",
   "resorts": [
     {
       "id": "zao",
@@ -26,9 +26,9 @@ window.SNOW_DATA = {
       "name": "志賀高原",
       "page": "shiga.html",
       "official": "https://www.shigakogen.gr.jp/lift_information/",
-      "snow": "0cm",
-      "status": "closed",
-      "courses": "0/110"
+      "snow": null,
+      "status": "unknown",
+      "courses": null
     },
     {
       "id": "cortina",
