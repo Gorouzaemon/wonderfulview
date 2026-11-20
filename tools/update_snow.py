@@ -20,6 +20,7 @@ data/snow.js を作り直すプログラム。
 ・コース数だけが読めなかったときは「—」にするだけで、失敗にはしない。
 """
 import argparse
+import concurrent.futures
 import datetime as dt
 import html
 import json
@@ -34,7 +35,7 @@ import urllib.request
 # 設定
 # ---------------------------------------------------------
 
-# 読みに行くページ（1日に1回、1ページ1回だけ）
+# 読みに行くページ（1回の実行で1ページ1回だけ。返事がないときだけ、少し待ってやり直す）
 PAGES = {
     "zao": "https://zaomountainresort.com/area-information/",
     "madarao": "https://www.madarao.jp/ski/",
@@ -52,9 +53,10 @@ PAGES = {
 }
 
 USER_AGENT = "Mozilla/5.0 (compatible; SkiZekkeiBot/1.0; +https://gorouzaemon.github.io/wonderfulview/)"
-TIMEOUT_SECONDS = 30      # 返事を待つ長さ
-RETRY_WAIT_SECONDS = 5    # 失敗したときに、もう1回試すまでの待ち時間
-PAUSE_SECONDS = 1         # ページとページの間の休み時間
+TIMEOUT_SECONDS = 40      # 返事を待つ長さ
+RETRY_WAITS = [15, 60]    # 取得に失敗したとき、次に試すまで待つ秒数（＝あと2回試す）
+LAST_TRY_WAIT_SECONDS = 120  # それでもだめなページは、全部終わってから2分待って最後にもう1回だけ試す
+PARALLEL = 6              # 同時に読みに行くページの数（サイトはばらばらなので、1つのサイトの負荷は増えない）
 MAX_AGE_DAYS = 2          # 何日前の情報までを「新しい」とみなすか
 MOSTLY_RATIO = 0.7        # 全コースのうちこの割合以上が滑れたら「大部分可」（0.7 ＝ 7割）
 MADARAO_TOTAL_COURSES = 32  # 斑尾の全コース数（公式の「25/32コース滑走可能」の分母）
@@ -636,21 +638,35 @@ def fetch(url):
         return response.read().decode(charset, errors="replace")
 
 
+def fetch_with_retry(key, url, waits):
+    """1ページを取得する。失敗したら waits の秒数だけ待って、やり直す。戻り値は (key, ページ or None)"""
+    for attempt, wait in enumerate(list(waits) + [None], start=1):
+        try:
+            page = fetch(url)
+            print(f"取得OK {url}")
+            return key, page
+        except Exception as error:
+            print(f"取得失敗（{attempt}回目） {url} : {error}")
+            if wait is None:
+                return key, None
+            time.sleep(wait)
+
+
+def fetch_all(keys, waits):
+    """いくつかのページを同時に取得する（別々のサイトなので、待ち時間が重ならず早く終わる）"""
+    with concurrent.futures.ThreadPoolExecutor(max_workers=PARALLEL) as pool:
+        return dict(pool.map(lambda key: fetch_with_retry(key, PAGES[key], waits), keys))
+
+
 def download_pages():
-    """全ページを1回ずつ取得する（失敗したら1回だけ、少し待ってやり直す）"""
-    pages = {}
-    for key, url in PAGES.items():
-        pages[key] = None
-        for attempt in (1, 2):
-            try:
-                pages[key] = fetch(url)
-                print(f"取得OK {url}")
-                break
-            except Exception as error:
-                print(f"取得失敗（{attempt}回目） {url} : {error}")
-                if attempt == 1:
-                    time.sleep(RETRY_WAIT_SECONDS)
-        time.sleep(PAUSE_SECONDS)
+    """全ページを取得する。GitHub のコンピューターからだと、一時的に返事がないサイトがあるので、
+    何回か待ってやり直し、それでもだめなページは最後にもう1回だけ試す"""
+    pages = fetch_all(list(PAGES), RETRY_WAITS)
+    failed = [key for key, page in pages.items() if page is None]
+    if failed:
+        print(f"{LAST_TRY_WAIT_SECONDS}秒待って、取得できなかったページをもう1回試す: {', '.join(failed)}")
+        time.sleep(LAST_TRY_WAIT_SECONDS)
+        pages.update(fetch_all(failed, []))
     return pages
 
 

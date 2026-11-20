@@ -28,7 +28,7 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15  # 返事のないサイトを待ってやり直しても、ふつうは1分以内に終わる
     steps:
       - uses: actions/checkout@v7
 
