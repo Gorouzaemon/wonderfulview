@@ -1,7 +1,7 @@
 // このファイルは tools/update_snow.py が毎日自動で書き換えます（手で直さなくてOK）
 window.SNOW_DATA = {
-  "updatedAt": "2026-11-19T21:41:18+09:00",
-  "updatedLabel": "11月19日 21時41分",
+  "updatedAt": "2026-11-20T09:45:03+09:00",
+  "updatedLabel": "11月20日 9時45分",
   "resorts": [
     {
       "id": "zao",
@@ -18,8 +18,8 @@ window.SNOW_DATA = {
       "page": "madarao.html",
       "official": "https://www.madarao.jp/ski/conditions",
       "snow": null,
-      "status": "closed",
-      "courses": "0/32"
+      "status": "unknown",
+      "courses": null
     },
     {
       "id": "shiga",
@@ -35,8 +35,8 @@ window.SNOW_DATA = {
       "name": "白馬コルチナ",
       "page": "cortina.html",
       "official": "https://www.hakubavalley.com/weather/detail_cortina/",
-      "snow": "0cm",
-      "status": "closed",
+      "snow": null,
+      "status": "unknown",
       "courses": null
     },
     {
@@ -44,8 +44,8 @@ window.SNOW_DATA = {
       "name": "栂池高原",
       "page": "tsugaike.html",
       "official": "https://www.hakubavalley.com/weather/detail_tsugaike/",
-      "snow": "0cm",
-      "status": "closed",
+      "snow": null,
+      "status": "unknown",
       "courses": null
     },
     {
@@ -54,35 +54,35 @@ window.SNOW_DATA = {
       "page": "iwatake.html",
       "official": "https://www.hakubavalley.com/weather/detail_iwatake/",
       "snow": null,
-      "status": "closed",
-      "courses": "0/8"
+      "status": "unknown",
+      "courses": null
     },
     {
       "id": "happo",
       "name": "白馬八方尾根",
       "page": "happo.html",
       "official": "https://www.hakubavalley.com/weather/detail_happo/",
-      "snow": "0cm",
-      "status": "closed",
-      "courses": "0/33"
+      "snow": null,
+      "status": "unknown",
+      "courses": null
     },
     {
       "id": "goryu",
       "name": "白馬47＆五竜",
       "page": "goryu.html",
       "official": "https://www.hakubavalley.com/weather/",
-      "snow": "0cm",
-      "status": "closed",
-      "courses": "0/39"
+      "snow": null,
+      "status": "unknown",
+      "courses": null
     },
     {
       "id": "okuibuki",
       "name": "奥伊吹",
       "page": "okuibuki.html",
       "official": "https://www.okuibuki.co.jp/gelande/",
-      "snow": "70cm",
-      "status": "partial",
-      "courses": "1/13"
+      "snow": null,
+      "status": "unknown",
+      "courses": null
     },
     {
       "id": "biwako",
