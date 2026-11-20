@@ -1,7 +1,7 @@
 // このファイルは tools/update_snow.py が毎日自動で書き換えます（手で直さなくてOK）
 window.SNOW_DATA = {
-  "updatedAt": "2026-11-20T12:37:11+09:00",
-  "updatedLabel": "11月20日 12時37分",
+  "updatedAt": "2026-11-21T08:56:16+09:00",
+  "updatedLabel": "11月21日 8時56分",
   "resorts": [
     {
       "id": "zao",
@@ -17,16 +17,16 @@ window.SNOW_DATA = {
       "name": "斑尾高原",
       "page": "madarao.html",
       "official": "https://www.madarao.jp/ski/conditions",
-      "snow": "16cm",
-      "status": "closed",
-      "courses": "0/32"
+      "snow": null,
+      "status": "unknown",
+      "courses": null
     },
     {
       "id": "shiga",
       "name": "志賀高原",
       "page": "shiga.html",
       "official": "https://www.shigakogen.gr.jp/lift_information/",
-      "snow": "0cm",
+      "snow": "0〜20cm",
       "status": "closed",
       "courses": "0/110"
     },
@@ -64,16 +64,16 @@ window.SNOW_DATA = {
       "official": "https://www.hakubavalley.com/weather/detail_happo/",
       "snow": "0cm",
       "status": "closed",
-      "courses": "0/33"
+      "courses": null
     },
     {
       "id": "goryu",
       "name": "白馬47＆五竜",
       "page": "goryu.html",
       "official": "https://www.hakubavalley.com/weather/",
-      "snow": "80cm",
-      "status": "closed",
-      "courses": "0/39"
+      "snow": "80〜160cm",
+      "status": "partial",
+      "courses": "1/39"
     },
     {
       "id": "okuibuki",
