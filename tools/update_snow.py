@@ -4,7 +4,7 @@
 data/snow.js を作り直すプログラム。
 
 ・AI は使っていない。決まったページを1回ずつ読んで、決まった場所の文字を拾うだけ。
-・GitHub Actions が毎日2回（朝7時30分と昼12時47分ごろ）、自動で動かす（.github/workflows/update-snow.yml）。
+・GitHub Actions が毎日2回（夜中3時7分と朝7時30分ごろ）、自動で動かす（.github/workflows/update-snow.yml）。
 ・Python の標準機能だけで動くので、何もインストールしなくてよい。
 
 手元で試すとき（サイトのフォルダで実行）:
