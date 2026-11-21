@@ -1,7 +1,7 @@
 // このファイルは tools/update_snow.py が毎日自動で書き換えます（手で直さなくてOK）
 window.SNOW_DATA = {
-  "updatedAt": "2026-11-21T09:22:12+09:00",
-  "updatedLabel": "11月21日 9時22分",
+  "updatedAt": "2026-11-21T12:19:17+09:00",
+  "updatedLabel": "11月21日 12時19分",
   "resorts": [
     {
       "id": "zao",
@@ -17,7 +17,7 @@ window.SNOW_DATA = {
       "name": "斑尾高原",
       "page": "madarao.html",
       "official": "https://www.madarao.jp/ski/conditions",
-      "snow": "18cm",
+      "snow": "14cm",
       "status": "closed",
       "courses": "0/32"
     },
@@ -26,9 +26,9 @@ window.SNOW_DATA = {
       "name": "志賀高原",
       "page": "shiga.html",
       "official": "https://www.shigakogen.gr.jp/lift_information/",
-      "snow": "0〜20cm",
-      "status": "closed",
-      "courses": "0/110"
+      "snow": "0〜15cm",
+      "status": "partial",
+      "courses": "2/110"
     },
     {
       "id": "cortina",
@@ -71,9 +71,9 @@ window.SNOW_DATA = {
       "name": "白馬47＆五竜",
       "page": "goryu.html",
       "official": "https://www.hakubagoryu.jp/ski/gelande/slope-conditions/",
-      "snow": "80〜160cm",
+      "snow": "110〜160cm",
       "status": "partial",
-      "courses": "1/39"
+      "courses": "3/39"
     },
     {
       "id": "okuibuki",
