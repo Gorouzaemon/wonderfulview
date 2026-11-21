@@ -41,11 +41,11 @@ PAGES = {
     "madarao": "https://www.madarao.jp/ski/",
     "madarao_cond": "https://www.madarao.jp/ski/conditions",
     "shiga": "https://www.shigakogen.gr.jp/lift_information/",
-    "hakuba": "https://www.hakubavalley.com/weather/",  # 白馬の5行の滑走可否と積雪はこの1ページで読める
+    "hakuba": "https://www.hakubavalley.com/weather/",  # 白馬の5行の積雪（と、予備の滑走可否）
     "okuibuki": "https://www.okuibuki.co.jp/gelande/",
     "biwako": "https://www.biwako-valley.com/winter",
-    # ここから下は、白馬の各スキー場のコース数を読むページ
-    "happo": "https://www.happo-one.jp/gelande/condition",
+    # ここから下は、白馬の各スキー場の公式ページ（コースの一覧。滑走可否とコース数をここから決める）
+    "happo": "https://www.happo-one.jp/gelande/condition/",
     "iwatake": "https://iwatake-mountain-resort.com/winter/course_lift/",
     "goryu": "https://www.hakubagoryu.jp/ski/gelande/slope-conditions/",  # 五竜と Hakuba47 の両方が載っている
     "cortina": "https://www.hgp.co.jp/cortina/ski/",
@@ -192,12 +192,19 @@ def plain(fragment):
     return re.sub(r"\s+", " ", text).strip()
 
 
-def to_date(text):
-    """「2026/02/15 07:37」「2026.02.01」「2026-03-16 7:33 am」→ 日付（無ければ None）"""
+def to_date(text, today=None):
+    """「2026/02/15 07:37」「2026.02.01」「2026-03-16 7:33 am」→ 日付（無ければ None）。
+    「11/21 9:00観測」のように年が書かれていないときは、today を渡せば今年（年をまたぐときは去年）とみなす"""
     found = re.search(r"(\d{4})[/.\-](\d{1,2})[/.\-](\d{1,2})", text)
-    if not found:
+    if found:
+        return dt.date(int(found.group(1)), int(found.group(2)), int(found.group(3)))
+    found = re.search(r"(\d{1,2})\s*[/月]\s*(\d{1,2})", text)
+    if today is None or not found:
         return None
-    return dt.date(int(found.group(1)), int(found.group(2)), int(found.group(3)))
+    date = dt.date(today.year, int(found.group(1)), int(found.group(2)))
+    if date > today + dt.timedelta(days=1):
+        date = date.replace(year=today.year - 1)  # 1月に見た「12/31」は去年
+    return date
 
 
 def to_cm(text):
@@ -323,7 +330,7 @@ def read_zao(page):
     return report(judge(*counts), snow, max(dates), course_pair(*counts))
 
 
-def madarao_course_count(page, conditions, date):
+def madarao_course_count(page, conditions, date, today):
     """斑尾の文章からコース数を探す。書き方が日によって違うので順番に試す。無ければ None"""
     pattern = r"(\d+)\s*/\s*(\d+)\s*コース\s*滑走可能"
     found = re.search(pattern, plain(page))  # 例：25/32コース滑走可能で営業予定です
@@ -331,7 +338,7 @@ def madarao_course_count(page, conditions, date):
         return int(found.group(1)), int(found.group(2))
 
     # 詳細ページは同じ日に更新されたものだけ使う
-    if to_date(plain(first(r'<p class="is-center t-small">(.*?)</p>', conditions, "詳細ページの更新日"))) != date:
+    if to_date(plain(first(r'<p class="is-center t-small">(.*?)</p>', conditions, "詳細ページの更新日")), today) != date:
         return None
     found = re.search(pattern, plain(conditions))
     if found:
@@ -350,11 +357,16 @@ def madarao_course_count(page, conditions, date):
     return can_ski, MADARAO_TOTAL_COURSES
 
 
-def read_madarao(page, conditions):
+def read_madarao(page, conditions, today=None):
     """斑尾高原：文章のコース数を優先し、書かれていないときはリフトの運行表で判断する"""
+    today = today or dt.datetime.now(JST).date()
     page = squeeze(page)
     conditions = squeeze(conditions)
-    date = to_date(first(r"本日のゲレンデ状況</dt>\s*<dd>(.*?)</dd>", page, "更新日"))
+    # 上の帯の最初の欄が更新日。書き方が変わることがある
+    # （「本日のゲレンデ状況 2026-03-16 7:33 am」「積雪・気象状況 11/21 9:00観測」など）
+    date = to_date(plain(first(r'bar-condition-inner">\s*<dl>\s*<dt>[^<]*</dt>\s*<dd>(.*?)</dd>', page, "更新日")), today)
+    if date is None:
+        raise Unreadable("更新日の書き方が分からない")
     snow = [(to_cm(first(r"<dt>積雪</dt>\s*<dd>(.*?)</dd>", page, "積雪")), date)]
 
     lift_table = first(r"リフト運行予定</th>(.*?)(?:table-head|</table>)", page, "リフトの表")
@@ -366,7 +378,7 @@ def read_madarao(page, conditions):
         return report(CLOSED, snow, date, (0, MADARAO_TOTAL_COURSES))
 
     try:
-        pair = madarao_course_count(page, conditions, date)
+        pair = madarao_course_count(page, conditions, date, today)
     except Unreadable as error:
         print(f"斑尾のコース数: {error}")
         pair = None
@@ -395,7 +407,9 @@ def read_shiga(page):
 
 
 def read_hakuba(page, slug):
-    """白馬バレーの公式ページ：スキー場ごとの滑走可否・積雪。slug は detail_xxx の xxx"""
+    """白馬バレーの公式ページ：スキー場ごとの積雪と滑走可否。slug は detail_xxx の xxx。
+    滑走可否が読めないときも積雪は使えるように、状態を unknown にして返す
+    （白馬の5行の滑走可否は、ふだんは各スキー場の公式ページのほうを使う）"""
     page = squeeze(page)
     for item in page.split('<div class="report-item">')[1:]:
         if re.search(rf'/weather/detail_{slug}/?"', item):
@@ -412,7 +426,11 @@ def read_hakuba(page, slug):
     snow = [(to_cm(first(r'snow_status">\s*<span class="status-item">(.*?)</span>', item, "積雪")), date)]
 
     if label:
-        return report(word_state(label, HAKUBA_WORDS), snow, date)
+        try:
+            return report(word_state(label, HAKUBA_WORDS), snow, date)
+        except Unreadable as error:
+            print(f"白馬バレーの {name}: {error}")
+            return report(UNKNOWN, snow, date)
 
     # シーズン前は滑走可否が空欄になる。リフトが全部止まっていればクローズとみなす
     for lift_item in page.split('<div class="lift-item')[1:]:
@@ -420,7 +438,8 @@ def read_hakuba(page, slug):
             lifts = set(re.findall(r'<tr class="status_(\w+)">', lift_item))
             if lifts == {"closed"}:
                 return report(CLOSED, snow, date)
-            raise Unreadable("滑走可否が空欄なのにリフトの状態がクローズではない")
+            print(f"白馬バレーの {name}: 滑走可否が空欄なのにリフトが動いている")
+            return report(UNKNOWN, snow, date)
     raise Unreadable(f"{name} のリフトの表が見つからない")
 
 
@@ -501,7 +520,8 @@ def read_biwako(page):
 
 
 # ---------------------------------------------------------
-# 白馬のスキー場のコース数（戻り値は ((滑走できるコース数, 全コース数), 更新日)）
+# 白馬の各スキー場の公式ページ（コースの一覧）。滑走可否とコース数はここから決める。
+# 戻り値は ((滑れる数, 一部だけ滑れる数, 滑れない数), 更新日)
 # ---------------------------------------------------------
 
 def read_happo_courses(page):
@@ -511,7 +531,7 @@ def read_happo_courses(page):
     cells = re.findall(r"<tr>\s*<td>[^<]*</td>\s*<td>[^<]*</td>\s*<td>(.*?)</td>", table)
     words = [first(r'alt="([^"]*)"', cell, "コースの印") for cell in cells]
     date = to_date(first(r'update-time">(.*?)</p>', page, "更新日"))
-    return course_pair(*tally(words, HAPPO_COURSE_WORDS)), date
+    return tally(words, HAPPO_COURSE_WORDS), date
 
 
 def read_iwatake_courses(page):
@@ -525,26 +545,28 @@ def read_iwatake_courses(page):
             if state and "クロスカントリー" not in row:
                 words.append(state.group(1))
     date = to_date(first(r'course_update_data">(.*?)</span>', page, "更新日"))
-    return course_pair(*tally(words, IWATAKE_COURSE_CLASSES)), date
+    return tally(words, IWATAKE_COURSE_CLASSES), date
 
 
 def read_goryu_courses(page):
-    """白馬47＆五竜：アルプス平/とおみ・いいもり・Hakuba47 の3つの表を合わせて数える"""
+    """白馬47＆五竜：五竜の公式ページにある、アルプス平/とおみ・いいもり・Hakuba47 の3つの表を合わせて数える。
+    （Hakuba47 の公式ページの表は、開いた後にブラウザの中で中身が埋まる仕組みなので、このプログラムでは読めない）"""
     blocks = squeeze(page).split("c-status-table__heading")[1:]
     if len(blocks) < 3:
         raise Unreadable("コースの表が足りない")
-    can_ski = total = 0
+    full = partial = closed = 0
     oldest_open = None  # 滑れるコースがある表のうち、いちばん古い更新日
     for block in blocks:
         date = to_date(first(r'c-status-table__update">(.*?)</p>', block, "更新日"))
         rows = re.findall(r'<td>((?:(?!</?td).)*)</td>\s*<td>\s*<p class="status[^"]*">(.*?)</p>', block)
         words = [word for name, word in rows if not GORYU_SKIP_ROWS.search(plain(name))]
-        here_can_ski, here_total = course_pair(*tally(words, GORYU_COURSE_WORDS))
-        can_ski += here_can_ski
-        total += here_total
-        if here_can_ski and (oldest_open is None or date < oldest_open):
+        here_full, here_partial, here_closed = tally(words, GORYU_COURSE_WORDS)
+        full += here_full
+        partial += here_partial
+        closed += here_closed
+        if (here_full or here_partial) and (oldest_open is None or date < oldest_open):
             oldest_open = date
-    return (can_ski, total), oldest_open
+    return (full, partial, closed), oldest_open
 
 
 def read_cortina_courses(page, today):
@@ -554,11 +576,9 @@ def read_cortina_courses(page, today):
     found = re.fullmatch(r"(\d+)\s*/\s*(\d+)", count)
     if not found:
         raise Unreadable(f"コース数の形が違う「{count}」")
-    month, day = first(r'<p class="day">\s*(\d{1,2}/\d{1,2})', page, "日付").split("/")
-    date = dt.date(today.year, int(month), int(day))
-    if date > today + dt.timedelta(days=1):
-        date = date.replace(year=today.year - 1)  # 年をまたいだとき
-    return (int(found.group(1)), int(found.group(2))), date
+    date = to_date(first(r'<p class="day">\s*(\d{1,2}/\d{1,2})', page, "日付"), today)
+    can_ski, total = int(found.group(1)), int(found.group(2))
+    return (can_ski, 0, total - can_ski), date
 
 
 def need(pages, key):
@@ -569,60 +589,60 @@ def need(pages, key):
 
 
 def hakuba(slug):
-    return lambda pages: read_hakuba(need(pages, "hakuba"), slug)
+    return lambda pages, today: read_hakuba(need(pages, "hakuba"), slug)
 
 
 # 表に並べるスキー場（ここに書いた順番で表示する）。
-# readers は滑走可否と積雪、courses は白馬のようにコース数を別のページから読むとき。
+# readers：積雪・滑走可否・コース数を読む（白馬の5行は白馬バレーのページで、積雪はここから読む）
+# own：白馬の各スキー場の公式ページ（コースの一覧）。滑走可否とコース数はこちらを優先する。
+#      読めないとき（サイトのメンテナンス中など）は白馬バレーの滑走可否を使い、コース数は「—」にする
+# official：表の「公式」リンクの行き先
 # スキー場を増やすときは、読み取りの関数を作ってここに足す。
 RESORTS = [
     {
         "id": "zao", "name": "蔵王温泉", "page": "zao.html", "official": PAGES["zao"],
-        "readers": [lambda pages: read_zao(need(pages, "zao"))],
+        "readers": [lambda pages, today: read_zao(need(pages, "zao"))],
     },
     {
         "id": "madarao", "name": "斑尾高原", "page": "madarao.html", "official": PAGES["madarao_cond"],
-        "readers": [lambda pages: read_madarao(need(pages, "madarao"), pages.get("madarao_cond") or "")],
+        "readers": [lambda pages, today: read_madarao(need(pages, "madarao"), pages.get("madarao_cond") or "", today)],
     },
     {
         "id": "shiga", "name": "志賀高原", "page": "shiga.html", "official": PAGES["shiga"],
-        "readers": [lambda pages: read_shiga(need(pages, "shiga"))],
+        "readers": [lambda pages, today: read_shiga(need(pages, "shiga"))],
     },
     {
-        "id": "cortina", "name": "白馬コルチナ", "page": "cortina.html",
-        "official": "https://www.hakubavalley.com/weather/detail_cortina/",
+        "id": "cortina", "name": "白馬コルチナ", "page": "cortina.html", "official": PAGES["cortina"],
         "readers": [hakuba("cortina")],
-        "courses": lambda pages, today: read_cortina_courses(need(pages, "cortina"), today),
+        "own": lambda pages, today: read_cortina_courses(need(pages, "cortina"), today),
     },
     {
-        "id": "tsugaike", "name": "栂池高原", "page": "tsugaike.html",
-        "official": "https://www.hakubavalley.com/weather/detail_tsugaike/",
+        # 栂池の公式ページのコース状況は、別のアプリの埋め込みで読めないので、白馬バレーの滑走可否を使う
+        "id": "tsugaike", "name": "栂池高原", "page": "tsugaike.html", "official": "https://www.tsugaike.gr.jp/",
         "readers": [hakuba("tsugaike")],
     },
     {
-        "id": "iwatake", "name": "白馬岩岳", "page": "iwatake.html",
-        "official": "https://www.hakubavalley.com/weather/detail_iwatake/",
+        "id": "iwatake", "name": "白馬岩岳", "page": "iwatake.html", "official": PAGES["iwatake"],
         "readers": [hakuba("iwatake")],
-        "courses": lambda pages, today: read_iwatake_courses(need(pages, "iwatake")),
+        "own": lambda pages, today: read_iwatake_courses(need(pages, "iwatake")),
     },
     {
-        "id": "happo", "name": "白馬八方尾根", "page": "happo.html",
-        "official": "https://www.hakubavalley.com/weather/detail_happo/",
+        "id": "happo", "name": "白馬八方尾根", "page": "happo.html", "official": PAGES["happo"],
         "readers": [hakuba("happo")],
-        "courses": lambda pages, today: read_happo_courses(need(pages, "happo")),
+        "own": lambda pages, today: read_happo_courses(need(pages, "happo")),
     },
     {
-        "id": "goryu", "name": "白馬47＆五竜", "page": "goryu.html", "official": PAGES["hakuba"],
+        "id": "goryu", "name": "白馬47＆五竜", "page": "goryu.html", "official": PAGES["goryu"],
         "readers": [hakuba("goryu"), hakuba("hakuba47")],
-        "courses": lambda pages, today: read_goryu_courses(need(pages, "goryu")),
+        "own": lambda pages, today: read_goryu_courses(need(pages, "goryu")),
     },
     {
         "id": "okuibuki", "name": "奥伊吹", "page": "okuibuki.html", "official": PAGES["okuibuki"],
-        "readers": [lambda pages: read_okuibuki(need(pages, "okuibuki"))],
+        "readers": [lambda pages, today: read_okuibuki(need(pages, "okuibuki"))],
     },
     {
         "id": "biwako", "name": "琵琶湖バレイ", "page": "biwako.html", "official": PAGES["biwako"],
-        "readers": [lambda pages: read_biwako(need(pages, "biwako"))],
+        "readers": [lambda pages, today: read_biwako(need(pages, "biwako"))],
     },
 ]
 
@@ -681,32 +701,38 @@ def load_saved_pages(folder):
     return pages
 
 
-def read_courses(resort, results, pages, today):
-    """コース数を読む。読めなくても失敗にはしない（ページには「—」と出る）"""
-    if "courses" in resort:
-        try:
-            return resort["courses"](pages, today)
-        except Exception as error:
-            print(f"コース数を読めなかった: {resort['name']} : {error}")
-            return None, None
-    return results[0]["courses"], results[0]["date"]
+def read_own(resort, pages, today):
+    """白馬の各スキー場の公式ページから (状態, (滑走できるコース数, 全コース数), 更新日) を読む。
+    読めないときや、滑れるという情報が古いときは None（白馬バレーの滑走可否を使う）"""
+    try:
+        counts, date = resort["own"](pages, today)
+        status, _ = apply_age_rule(report(judge(*counts), [], date), today)
+        if status == UNKNOWN:
+            raise Unreadable("公式ページの情報が古い")
+        return status, course_pair(*counts), date
+    except Exception as error:
+        print(f"公式ページを読めなかった: {resort['name']} : {error}（白馬バレーの滑走可否を使う）")
+        return None
 
 
 def build_row(resort, pages, today):
-    """スキー場1行ぶんのデータを作る。どこかで失敗したら unknown にする"""
+    """スキー場1行ぶんのデータを作る。滑走可否が読めなかったら unknown にする"""
     row = {key: resort[key] for key in ("id", "name", "page", "official")}
     try:
-        results = [read(pages) for read in resort["readers"]]
+        results = [read(pages, today) for read in resort["readers"]]
         checked = [apply_age_rule(result, today) for result in results]
         row["snow"] = snow_label([value for _, values in checked for value in values])
-        row["status"] = merge_status([status for status, _ in checked])
-        pair, date = read_courses(resort, results, pages, today)
-        row["courses"] = course_label(pair, date, row["status"], today)
+        status = merge_status([status for status, _ in checked])
+        pair, date = results[0]["courses"], results[0]["date"]
     except Exception as error:  # 1つのスキー場の失敗で全体を止めない
         print(f"読めなかった: {resort['name']} : {error}")
         row["snow"] = None
-        row["status"] = UNKNOWN
-        row["courses"] = None
+        status, pair, date = UNKNOWN, None, None
+    if "own" in resort:  # 白馬：滑走可否とコース数は、各スキー場の公式ページを優先する
+        own = read_own(resort, pages, today)
+        status, pair, date = own if own else (status, None, None)
+    row["status"] = status
+    row["courses"] = course_label(pair, date, status, today)
     return row
 
 
