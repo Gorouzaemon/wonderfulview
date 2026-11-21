@@ -1,7 +1,7 @@
 // このファイルは tools/update_snow.py が毎日自動で書き換えます（手で直さなくてOK）
 window.SNOW_DATA = {
-  "updatedAt": "2026-11-21T08:56:16+09:00",
-  "updatedLabel": "11月21日 8時56分",
+  "updatedAt": "2026-11-21T09:22:12+09:00",
+  "updatedLabel": "11月21日 9時22分",
   "resorts": [
     {
       "id": "zao",
@@ -17,9 +17,9 @@ window.SNOW_DATA = {
       "name": "斑尾高原",
       "page": "madarao.html",
       "official": "https://www.madarao.jp/ski/conditions",
-      "snow": null,
-      "status": "unknown",
-      "courses": null
+      "snow": "18cm",
+      "status": "closed",
+      "courses": "0/32"
     },
     {
       "id": "shiga",
@@ -34,7 +34,7 @@ window.SNOW_DATA = {
       "id": "cortina",
       "name": "白馬コルチナ",
       "page": "cortina.html",
-      "official": "https://www.hakubavalley.com/weather/detail_cortina/",
+      "official": "https://www.hgp.co.jp/cortina/ski/",
       "snow": "0cm",
       "status": "closed",
       "courses": null
@@ -43,7 +43,7 @@ window.SNOW_DATA = {
       "id": "tsugaike",
       "name": "栂池高原",
       "page": "tsugaike.html",
-      "official": "https://www.hakubavalley.com/weather/detail_tsugaike/",
+      "official": "https://www.tsugaike.gr.jp/",
       "snow": "0cm",
       "status": "closed",
       "courses": null
@@ -52,7 +52,7 @@ window.SNOW_DATA = {
       "id": "iwatake",
       "name": "白馬岩岳",
       "page": "iwatake.html",
-      "official": "https://www.hakubavalley.com/weather/detail_iwatake/",
+      "official": "https://iwatake-mountain-resort.com/winter/course_lift/",
       "snow": null,
       "status": "closed",
       "courses": "0/8"
@@ -61,16 +61,16 @@ window.SNOW_DATA = {
       "id": "happo",
       "name": "白馬八方尾根",
       "page": "happo.html",
-      "official": "https://www.hakubavalley.com/weather/detail_happo/",
+      "official": "https://www.happo-one.jp/gelande/condition/",
       "snow": "0cm",
-      "status": "closed",
-      "courses": null
+      "status": "partial",
+      "courses": "1/33"
     },
     {
       "id": "goryu",
       "name": "白馬47＆五竜",
       "page": "goryu.html",
-      "official": "https://www.hakubavalley.com/weather/",
+      "official": "https://www.hakubagoryu.jp/ski/gelande/slope-conditions/",
       "snow": "80〜160cm",
       "status": "partial",
       "courses": "1/39"
