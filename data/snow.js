@@ -1,7 +1,7 @@
 // このファイルは tools/update_snow.py が毎日自動で書き換えます（手で直さなくてOK）
 window.SNOW_DATA = {
-  "updatedAt": "2026-11-22T11:26:29+09:00",
-  "updatedLabel": "11月22日 11時26分",
+  "updatedAt": "2026-11-23T08:33:17+09:00",
+  "updatedLabel": "11月23日 8時33分",
   "resorts": [
     {
       "id": "zao",
@@ -17,7 +17,7 @@ window.SNOW_DATA = {
       "name": "斑尾高原",
       "page": "madarao.html",
       "official": "https://www.madarao.jp/ski/conditions",
-      "snow": "8cm",
+      "snow": "4cm",
       "status": "closed",
       "courses": "0/32"
     },
@@ -62,7 +62,7 @@ window.SNOW_DATA = {
       "name": "白馬八方尾根",
       "page": "happo.html",
       "official": "https://www.happo-one.jp/gelande/condition/",
-      "snow": "0cm",
+      "snow": null,
       "status": "partial",
       "courses": "1/33"
     },
@@ -71,7 +71,7 @@ window.SNOW_DATA = {
       "name": "白馬47＆五竜",
       "page": "goryu.html",
       "official": "https://www.hakubagoryu.jp/ski/gelande/slope-conditions/",
-      "snow": "140〜180cm",
+      "snow": "140〜175cm",
       "status": "partial",
       "courses": "3/39"
     },
@@ -90,8 +90,8 @@ window.SNOW_DATA = {
       "page": "biwako.html",
       "official": "https://www.biwako-valley.com/winter",
       "snow": null,
-      "status": "closed",
-      "courses": "0/9"
+      "status": "unknown",
+      "courses": null
     }
   ]
 };
