@@ -379,10 +379,16 @@ function setupSnowTable() {
         var $name = $('<a class="snow-name" target="_blank" rel="opener">').attr('href', resort.page).text(resort.name);
         var $official = $('<a class="snow-official" target="_blank" rel="noopener">').attr('href', resort.official).text('公式');
 
+        // 公式サイトが一時的に読めず、前回の情報を出しているときは、いつの情報かを小さく書く
+        var $statusCell = $('<td>').append($status);
+        if (!isOld && resort.readLabel && status !== SNOW_STATUS.unknown) {
+            $statusCell.append($('<span class="snow-old">').text(resort.readLabel + 'の情報'));
+        }
+
         $('<tr>').append(
             $('<th scope="row">').append($name, $official),
             $('<td class="snow-depth">').text((!isOld && resort.snow) || '—'),
-            $('<td>').append($status),
+            $statusCell,
             $('<td class="snow-courses">').text((!isOld && resort.courses) || '—')
         ).appendTo($rows);
     });

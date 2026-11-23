@@ -11,13 +11,16 @@ data/snow.js を作り直すプログラム。
     python tools/update_snow.py
 
 大事な決まり:
-・読めなかったスキー場は、前回の数字を使い回さず「unknown」にする（ページには「公式サイトを確認」と出る）。
-・知らない言葉が出てきたら、勝手に推測せず「unknown」にする。
-  ただし「運休」「クローズ」「天候回復待ち」のように、はっきり「今は滑れない」という意味の言葉は、
-  どのスキー場でもクローズとして読む（CLOSED_WORDS）。
+・知らない言葉が出てきたら、勝手に推測せず「読めなかった」にする。
+  ただし、どのスキー場でも意味がはっきりしている言葉（「運休」「クローズ」「滑走可」「一部滑走可」など）と、
+  何も書かれていない欄（＝まだ営業していない）は読む（OPEN_WORDS・PARTIAL_WORDS・CLOSED_WORDS）。
 ・更新が止まっている古い情報は使わない（オフシーズンのページには春の積雪が残っているため）。
-・滑走可否が読めなかったら、最後に失敗として終わる（GitHub がメールで知らせてくれる）。
+・読めなかったスキー場は、24時間以内に読めた前回の情報があればそれを出す
+  （ページには「◯月◯日◯時◯分の情報」と小さく出る）。それも無ければ「unknown」（「公式サイトを確認」と出る）。
+・同じスキー場が2回続けて読めなかったら、最後に失敗として終わる（GitHub がメールで知らせてくれる）。
+  1回だけの失敗（サイトの一時的な不調など）では知らせない。
 ・コース数だけが読めなかったときは「—」にするだけで、失敗にはしない。
+・GitHub で動かしたときは、実行結果のページに表と「読めなかった理由」を書き出す。
 """
 import argparse
 import concurrent.futures
@@ -60,6 +63,8 @@ PARALLEL = 6              # 同時に読みに行くページの数（サイト�
 MAX_AGE_DAYS = 2          # 何日前の情報までを「新しい」とみなすか
 MOSTLY_RATIO = 0.7        # 全コースのうちこの割合以上が滑れたら「大部分可」（0.7 ＝ 7割）
 MADARAO_TOTAL_COURSES = 32  # 斑尾の全コース数（公式の「25/32コース滑走可能」の分母）
+CARRY_OVER_HOURS = 24     # 読めなかったとき、何時間前までに読めた前回の情報なら代わりに出すか
+NOTIFY_AFTER_FAILURES = 2  # 同じスキー場が何回続けて読めなかったら失敗として知らせるか
 
 JST = dt.timezone(dt.timedelta(hours=9))
 
@@ -68,17 +73,26 @@ MOSTLY = "mostly"    # 大部分可
 PARTIAL = "partial"  # 一部可
 CLOSED = "closed"    # クローズ
 UNKNOWN = "unknown"  # 読めなかった（ページには「公式サイトを確認」と出る）
+STATUS_LABELS = {FULL: "全面可", MOSTLY: "大部分可", PARTIAL: "一部可", CLOSED: "クローズ", UNKNOWN: "公式サイトを確認"}
 
 # 公式サイトの言葉 → 状態。ここに無い言葉が出てきたら「読めなかった」扱いになる。
 # 新しい言葉が出てきたら、ここに1行足せばよい。
 
-# どのスキー場でも「今は滑れない」という意味がはっきりしている言葉。
-# 下のスキー場ごとの表に無くても、これらはクローズとして読む（後ろに「(強風)」などの理由が付いていてもよい）
+# どのスキー場でも意味がはっきりしている、コース（またはリフト）1本ごとの言葉。
+# 下のスキー場ごとの表に無くても、これらは読む。
+# クローズの言葉は、後ろに「(強風)」などの理由が付いていてもよい
+OPEN_WORDS = {
+    "滑走可", "滑走可能", "全面滑走可", "全面滑走可能", "オープン", "OPEN", "営業中", "運行中", "○", "◯",
+}
+PARTIAL_WORDS = {
+    "一部滑走可", "一部滑走可能", "一部滑走不可", "一部オープン", "一部クローズ", "一部閉鎖", "△",
+}
 CLOSED_WORDS = {
     "クローズ", "CLOSE", "CLOSED", "閉鎖", "閉鎖中", "滑走不可", "滑走禁止",
     "運休", "運休中", "休止", "休止中", "休業", "臨時休業", "営業休止", "営業中止", "営業終了", "営業時間外",
     "準備中", "調整中", "整備中", "点検中", "圧雪中",
     "天候回復待", "天候回復待ち", "天候調査中", "強風運休", "強風のため運休",
+    "×", "X",
 }
 
 # スキー場全体の言葉（そのまま4段階になる）
@@ -173,6 +187,15 @@ class Unreadable(Exception):
     """ページの形が予想と違って読み取れなかったときのエラー"""
 
 
+PROBLEMS = []  # 読めなかった理由などのメモ（GitHub の実行結果のページに書き出す）
+
+
+def note(message):
+    """読めなかった理由などを表示して、メモにも残す"""
+    print(message)
+    PROBLEMS.append(message)
+
+
 # ---------------------------------------------------------
 # 共通の小さな道具
 # ---------------------------------------------------------
@@ -221,11 +244,20 @@ def first(pattern, text, what):
     return found.group(1)
 
 
-def word_state(word, table):
-    """言葉 → 状態。表に無い言葉でも、はっきり「今は滑れない」という意味ならクローズにする。
+def word_state(word, table, units=True):
+    """言葉 → 状態。スキー場ごとの表に無い言葉は、どこでも意味がはっきりしているものだけ読む。
+    units=True はコースやリフト1本ごとの言葉（何も書かれていない欄は「まだ営業していない」とみなす）。
+    units=False はスキー場全体の言葉（「オープン」だけでは全面かどうか分からないので、クローズの言葉だけ読む）。
     それ以外の知らない言葉は「読めなかった」にする"""
     if word in table:
         return table[word]
+    if units:
+        if not word:
+            return CLOSED  # シーズン前に、状態の欄を空にするスキー場がある
+        if word in OPEN_WORDS:
+            return FULL
+        if word in PARTIAL_WORDS:
+            return PARTIAL
     base = re.sub(r"\s*\([^()]*\)$", "", word)  # 「クローズ(強風)」→「クローズ」
     if base in CLOSED_WORDS or table.get(base) == CLOSED:
         return CLOSED
@@ -380,7 +412,7 @@ def read_madarao(page, conditions, today=None):
     try:
         pair = madarao_course_count(page, conditions, date, today)
     except Unreadable as error:
-        print(f"斑尾のコース数: {error}")
+        note(f"斑尾のコース数: {error}")
         pair = None
     if pair:
         can_ski, total = pair
@@ -427,9 +459,9 @@ def read_hakuba(page, slug):
 
     if label:
         try:
-            return report(word_state(label, HAKUBA_WORDS), snow, date)
+            return report(word_state(label, HAKUBA_WORDS, units=False), snow, date)
         except Unreadable as error:
-            print(f"白馬バレーの {name}: {error}")
+            note(f"白馬バレーの {name}: {error}")
             return report(UNKNOWN, snow, date)
 
     # シーズン前は滑走可否が空欄になる。リフトが全部止まっていればクローズとみなす
@@ -438,7 +470,7 @@ def read_hakuba(page, slug):
             lifts = set(re.findall(r'<tr class="status_(\w+)">', lift_item))
             if lifts == {"closed"}:
                 return report(CLOSED, snow, date)
-            print(f"白馬バレーの {name}: 滑走可否が空欄なのにリフトが動いている")
+            note(f"白馬バレーの {name}: 滑走可否が空欄なのにリフトが動いている")
             return report(UNKNOWN, snow, date)
     raise Unreadable(f"{name} のリフトの表が見つからない")
 
@@ -486,7 +518,7 @@ def read_okuibuki(page):
     snow = [(to_cm(first(r'lcl-open-item__ttl">積雪</dt>\s*<dd[^>]*>(.*?)</dd>', page, "積雪")), date)]
     marks = okuibuki_course_marks(page)
 
-    if word_state(word, {"OPEN": FULL, "CLOSE": CLOSED, "CLOSED": CLOSED}) == CLOSED:
+    if word_state(word, {"OPEN": FULL, "CLOSE": CLOSED, "CLOSED": CLOSED}, units=False) == CLOSED:
         return report(CLOSED, snow, date, (0, len(marks)))
 
     counts = tally([okuibuki_word(mark) for mark in marks], OKUIBUKI_COURSE_WORDS)
@@ -496,9 +528,15 @@ def read_okuibuki(page):
 
 
 def read_biwako(page):
-    """琵琶湖バレイ：コース営業情報の表と、「本日の情報」の文章に書かれた積雪"""
+    """琵琶湖バレイ：コース営業情報の表と、「本日の情報」の文章に書かれた積雪。
+    シーズン前は状態の欄が空になる（＝まだ営業していない）"""
     page = squeeze(page)
-    table = first(r'(<table id="tablepress-5".*?</table>)', page, "コースの表")
+    # 表の番号（tablepress-5）が変わっても、「コース営業情報」の見出しのすぐ後の表を使えるように
+    found = (re.search(r'(<table id="tablepress-5".*?</table>)', page)
+             or re.search(r"コース営業情報\s*</summary>.*?(<table.*?</table>)", page))
+    if not found:
+        raise Unreadable("コースの表が見つからない")
+    table = found.group(1)
     words = []
     for name, word in re.findall(r'<td class="column-1">(.*?)</td>\s*<td class="column-2">(.*?)</td>', table):
         name = plain(name)
@@ -687,6 +725,9 @@ def download_pages():
         print(f"{LAST_TRY_WAIT_SECONDS}秒待って、取得できなかったページをもう1回試す: {', '.join(failed)}")
         time.sleep(LAST_TRY_WAIT_SECONDS)
         pages.update(fetch_all(failed, []))
+    for key, page in pages.items():
+        if page is None:
+            note(f"ページを取得できなかった: {PAGES[key]}")
     return pages
 
 
@@ -711,7 +752,7 @@ def read_own(resort, pages, today):
             raise Unreadable("公式ページの情報が古い")
         return status, course_pair(*counts), date
     except Exception as error:
-        print(f"公式ページを読めなかった: {resort['name']} : {error}（白馬バレーの滑走可否を使う）")
+        note(f"{resort['name']}: 公式ページを読めなかったので、白馬バレーの滑走可否を使う（{error}）")
         return None
 
 
@@ -724,8 +765,11 @@ def build_row(resort, pages, today):
         row["snow"] = snow_label([value for _, values in checked for value in values])
         status = merge_status([status for status, _ in checked])
         pair, date = results[0]["courses"], results[0]["date"]
+        if any(result["status"] != UNKNOWN and status_now == UNKNOWN
+               for result, (status_now, _) in zip(results, checked)) and "own" not in resort:
+            note(f"{resort['name']}: 「滑れる」という情報が古い（{results[0]['date']} の更新）ので出さない")
     except Exception as error:  # 1つのスキー場の失敗で全体を止めない
-        print(f"読めなかった: {resort['name']} : {error}")
+        note(f"{resort['name']}: 読めなかった（{error}）")
         row["snow"] = None
         status, pair, date = UNKNOWN, None, None
     if "own" in resort:  # 白馬：滑走可否とコース数は、各スキー場の公式ページを優先する
@@ -736,12 +780,73 @@ def build_row(resort, pages, today):
     return row
 
 
-def build_data(pages, now):
-    return {
-        "updatedAt": now.isoformat(timespec="seconds"),
-        "updatedLabel": f"{now.month}月{now.day}日 {now.hour}時{now.minute}分",
-        "resorts": [build_row(resort, pages, now.date()) for resort in RESORTS],
-    }
+def time_label(moment):
+    """日時 → 「11月23日 7時30分」"""
+    return f"{moment.month}月{moment.day}日 {moment.hour}時{moment.minute}分"
+
+
+def load_previous(path):
+    """前回書き出した data/snow.js を読む。戻り値は {スキー場のid: 行}（無ければ空）"""
+    try:
+        with open(path, encoding="utf-8") as file:
+            text = file.read()
+        data = json.loads(text[text.index("{"):text.rindex("}") + 1])
+        return {row["id"]: row for row in data["resorts"]}
+    except (OSError, ValueError, KeyError, TypeError):
+        return {}
+
+
+def carry_over(row, before, now):
+    """今回読めなかった行に、CARRY_OVER_HOURS 時間以内に読めた前回の情報があれば、それを出す"""
+    row["failures"] = before.get("failures", 0) + 1  # 何回続けて読めなかったか
+    if before.get("status") in (None, UNKNOWN) or not before.get("readAt"):
+        return row
+    try:
+        read_at = dt.datetime.fromisoformat(before["readAt"])
+    except (TypeError, ValueError):
+        return row
+    if now - read_at > dt.timedelta(hours=CARRY_OVER_HOURS):
+        return row
+    for key in ("status", "snow", "courses", "readAt"):
+        row[key] = before.get(key)
+    row["readLabel"] = time_label(read_at)  # ページに「◯月◯日◯時◯分の情報」と出る
+    return row
+
+
+def build_data(pages, now, previous=None):
+    previous = previous or {}
+    rows = []
+    for resort in RESORTS:
+        row = build_row(resort, pages, now.date())
+        if row["status"] == UNKNOWN:
+            row = carry_over(row, previous.get(row["id"], {}), now)
+        else:
+            row["readAt"] = now.isoformat(timespec="seconds")
+            row["failures"] = 0
+        rows.append(row)
+    return {"updatedAt": now.isoformat(timespec="seconds"), "updatedLabel": time_label(now), "resorts": rows}
+
+
+def failure_label(row):
+    """読めなかった回数 → 「読めなかった」「読めなかった（2回続けて）」。読めていれば空"""
+    if not row["failures"]:
+        return ""
+    return "読めなかった" + (f"（{row['failures']}回続けて）" if row["failures"] >= 2 else "")
+
+
+def write_summary(data, path):
+    """GitHub の実行結果のページに、表と「読めなかった理由」を書き出す（GitHub にログインすると見られる）"""
+    lines = [f"## {data['updatedLabel']} 時点", "",
+             "| スキー場 | 積雪 | 滑走可否 | コース | メモ |", "|---|---|---|---|---|"]
+    for row in data["resorts"]:
+        memo = failure_label(row)
+        if row.get("readLabel"):
+            memo += f"（{row['readLabel']}の情報を表示中）"
+        lines.append(f"| {row['name']} | {row['snow'] or '—'} | {STATUS_LABELS[row['status']]} | {row['courses'] or '—'} | {memo} |")
+    if PROBLEMS:
+        lines += ["", "### 読めなかった理由・メモ", ""] + [f"- {problem}" for problem in PROBLEMS]
+    with open(path, "a", encoding="utf-8") as file:
+        file.write("\n".join(lines) + "\n")
 
 
 def write_data(data, path):
@@ -766,17 +871,23 @@ def main():
     if args.today:
         now = dt.datetime.combine(dt.date.fromisoformat(args.today), dt.time(9, 17), JST)
 
+    previous = load_previous(args.output)  # 前回の結果（読めなかったときの代わりと、続けて失敗した回数のため）
     pages = load_saved_pages(args.from_dir) if args.from_dir else download_pages()
-    data = build_data(pages, now)
+    data = build_data(pages, now, previous)
     write_data(data, args.output)
+    if os.environ.get("GITHUB_STEP_SUMMARY"):
+        write_summary(data, os.environ["GITHUB_STEP_SUMMARY"])
 
     print(f"--- {data['updatedLabel']} 時点 ---")
     for row in data["resorts"]:
-        print(f"{row['name']}: 積雪={row['snow'] or '-'} 滑走可否={row['status']} コース={row['courses'] or '-'}")
+        extra = f" ※{failure_label(row)}" if row["failures"] else ""
+        if row.get("readLabel"):
+            extra += f"、{row['readLabel']}の情報を表示"
+        print(f"{row['name']}: 積雪={row['snow'] or '-'} 滑走可否={row['status']} コース={row['courses'] or '-'}{extra}")
 
-    failed = [row["name"] for row in data["resorts"] if row["status"] == UNKNOWN]
-    if failed:
-        print("読めなかったスキー場: " + "、".join(failed))
+    repeated = [row["name"] for row in data["resorts"] if row["failures"] >= NOTIFY_AFTER_FAILURES]
+    if repeated:
+        print(f"{NOTIFY_AFTER_FAILURES}回続けて読めなかったスキー場: " + "、".join(repeated))
         return 1
     return 0
 
