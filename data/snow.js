@@ -1,7 +1,7 @@
 // このファイルは tools/update_snow.py が毎日自動で書き換えます（手で直さなくてOK）
 window.SNOW_DATA = {
-  "updatedAt": "2026-11-23T08:33:17+09:00",
-  "updatedLabel": "11月23日 8時33分",
+  "updatedAt": "2026-11-23T09:36:36+09:00",
+  "updatedLabel": "11月23日 9時36分",
   "resorts": [
     {
       "id": "zao",
@@ -10,7 +10,9 @@ window.SNOW_DATA = {
       "official": "https://zaomountainresort.com/area-information/",
       "snow": null,
       "status": "closed",
-      "courses": "0/23"
+      "courses": "0/23",
+      "readAt": "2026-11-23T09:36:36+09:00",
+      "failures": 0
     },
     {
       "id": "madarao",
@@ -19,7 +21,9 @@ window.SNOW_DATA = {
       "official": "https://www.madarao.jp/ski/conditions",
       "snow": "4cm",
       "status": "closed",
-      "courses": "0/32"
+      "courses": "0/32",
+      "readAt": "2026-11-23T09:36:36+09:00",
+      "failures": 0
     },
     {
       "id": "shiga",
@@ -28,7 +32,9 @@ window.SNOW_DATA = {
       "official": "https://www.shigakogen.gr.jp/lift_information/",
       "snow": "0〜15cm",
       "status": "partial",
-      "courses": "2/110"
+      "courses": "2/110",
+      "readAt": "2026-11-23T09:36:36+09:00",
+      "failures": 0
     },
     {
       "id": "cortina",
@@ -37,7 +43,9 @@ window.SNOW_DATA = {
       "official": "https://www.hgp.co.jp/cortina/ski/",
       "snow": "0cm",
       "status": "closed",
-      "courses": null
+      "courses": null,
+      "readAt": "2026-11-23T09:36:36+09:00",
+      "failures": 0
     },
     {
       "id": "tsugaike",
@@ -46,7 +54,9 @@ window.SNOW_DATA = {
       "official": "https://www.tsugaike.gr.jp/",
       "snow": "0cm",
       "status": "closed",
-      "courses": null
+      "courses": null,
+      "readAt": "2026-11-23T09:36:36+09:00",
+      "failures": 0
     },
     {
       "id": "iwatake",
@@ -55,7 +65,9 @@ window.SNOW_DATA = {
       "official": "https://iwatake-mountain-resort.com/winter/course_lift/",
       "snow": null,
       "status": "closed",
-      "courses": "0/8"
+      "courses": "0/8",
+      "readAt": "2026-11-23T09:36:36+09:00",
+      "failures": 0
     },
     {
       "id": "happo",
@@ -64,7 +76,9 @@ window.SNOW_DATA = {
       "official": "https://www.happo-one.jp/gelande/condition/",
       "snow": null,
       "status": "partial",
-      "courses": "1/33"
+      "courses": "1/33",
+      "readAt": "2026-11-23T09:36:36+09:00",
+      "failures": 0
     },
     {
       "id": "goryu",
@@ -73,7 +87,9 @@ window.SNOW_DATA = {
       "official": "https://www.hakubagoryu.jp/ski/gelande/slope-conditions/",
       "snow": "140〜175cm",
       "status": "partial",
-      "courses": "3/39"
+      "courses": "3/39",
+      "readAt": "2026-11-23T09:36:36+09:00",
+      "failures": 0
     },
     {
       "id": "okuibuki",
@@ -82,7 +98,9 @@ window.SNOW_DATA = {
       "official": "https://www.okuibuki.co.jp/gelande/",
       "snow": "70cm",
       "status": "partial",
-      "courses": "1/13"
+      "courses": "1/13",
+      "readAt": "2026-11-23T09:36:36+09:00",
+      "failures": 0
     },
     {
       "id": "biwako",
@@ -90,8 +108,10 @@ window.SNOW_DATA = {
       "page": "biwako.html",
       "official": "https://www.biwako-valley.com/winter",
       "snow": null,
-      "status": "unknown",
-      "courses": null
+      "status": "closed",
+      "courses": "0/9",
+      "readAt": "2026-11-23T09:36:36+09:00",
+      "failures": 0
     }
   ]
 };
