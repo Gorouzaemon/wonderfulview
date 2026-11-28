@@ -1,17 +1,17 @@
 // このファイルは tools/update_snow.py が毎日自動で書き換えます（手で直さなくてOK）
 window.SNOW_DATA = {
-  "updatedAt": "2026-11-27T13:22:48+09:00",
-  "updatedLabel": "11月27日 13時22分",
+  "updatedAt": "2026-11-28T10:22:34+09:00",
+  "updatedLabel": "11月28日 10時22分",
   "resorts": [
     {
       "id": "zao",
       "name": "蔵王温泉",
       "page": "zao.html",
       "official": "https://zaomountainresort.com/area-information/",
-      "snow": null,
-      "status": "closed",
-      "courses": "0/23",
-      "readAt": "2026-11-27T13:22:48+09:00",
+      "snow": "10〜40cm",
+      "status": "partial",
+      "courses": "1/23",
+      "readAt": "2026-11-28T10:22:34+09:00",
       "failures": 0
     },
     {
@@ -22,7 +22,7 @@ window.SNOW_DATA = {
       "snow": "0cm",
       "status": "closed",
       "courses": "0/32",
-      "readAt": "2026-11-27T13:22:48+09:00",
+      "readAt": "2026-11-28T10:22:34+09:00",
       "failures": 0
     },
     {
@@ -32,8 +32,8 @@ window.SNOW_DATA = {
       "official": "https://www.shigakogen.gr.jp/lift_information/",
       "snow": "0〜15cm",
       "status": "partial",
-      "courses": "3/110",
-      "readAt": "2026-11-27T13:22:48+09:00",
+      "courses": "2/110",
+      "readAt": "2026-11-28T10:22:34+09:00",
       "failures": 0
     },
     {
@@ -44,7 +44,7 @@ window.SNOW_DATA = {
       "snow": "0cm",
       "status": "closed",
       "courses": null,
-      "readAt": "2026-11-27T13:22:48+09:00",
+      "readAt": "2026-11-28T10:22:34+09:00",
       "failures": 0
     },
     {
@@ -55,7 +55,7 @@ window.SNOW_DATA = {
       "snow": "0cm",
       "status": "closed",
       "courses": null,
-      "readAt": "2026-11-27T13:22:48+09:00",
+      "readAt": "2026-11-28T10:22:34+09:00",
       "failures": 0
     },
     {
@@ -66,7 +66,7 @@ window.SNOW_DATA = {
       "snow": null,
       "status": "closed",
       "courses": "0/8",
-      "readAt": "2026-11-27T13:22:48+09:00",
+      "readAt": "2026-11-28T10:22:34+09:00",
       "failures": 0
     },
     {
@@ -74,10 +74,10 @@ window.SNOW_DATA = {
       "name": "白馬八方尾根",
       "page": "happo.html",
       "official": "https://www.happo-one.jp/gelande/condition/",
-      "snow": "124cm",
+      "snow": "92cm",
       "status": "partial",
       "courses": null,
-      "readAt": "2026-11-27T13:22:48+09:00",
+      "readAt": "2026-11-28T10:22:34+09:00",
       "failures": 0
     },
     {
@@ -85,10 +85,10 @@ window.SNOW_DATA = {
       "name": "白馬47＆五竜",
       "page": "goryu.html",
       "official": "https://www.hakubagoryu.jp/ski/gelande/slope-conditions/",
-      "snow": "105cm",
+      "snow": "90cm",
       "status": "partial",
-      "courses": "19/39",
-      "readAt": "2026-11-27T13:22:48+09:00",
+      "courses": "12/39",
+      "readAt": "2026-11-28T10:22:34+09:00",
       "failures": 0
     },
     {
@@ -99,7 +99,7 @@ window.SNOW_DATA = {
       "snow": "70cm",
       "status": "partial",
       "courses": "2/13",
-      "readAt": "2026-11-27T13:22:48+09:00",
+      "readAt": "2026-11-28T10:22:34+09:00",
       "failures": 0
     },
     {
@@ -110,7 +110,7 @@ window.SNOW_DATA = {
       "snow": null,
       "status": "closed",
       "courses": "0/9",
-      "readAt": "2026-11-27T13:22:48+09:00",
+      "readAt": "2026-11-28T10:22:34+09:00",
       "failures": 0
     }
   ]
